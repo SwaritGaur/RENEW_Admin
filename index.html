@@ -1,505 +1,1256 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>RENEW · Admin Console</title>
 <style>
-  :root{
-    --bg:#ffffff;
-    --surface:#f5f7fa;
-    --surface-2:#eef1f5;
-    --border:#dde2e9;
-    --text:#0f1f2e;
-    --text-dim:#4a5a6a;
-    --text-faint:#8a97a6;
-    --accent:#1a4b6e;
-    --accent-soft:rgba(26,75,110,0.10);
-    --green:#00835d;
-    --green-soft:rgba(0,131,93,0.10);
-    --amber:#b45309;
-    --amber-soft:rgba(180,83,9,0.10);
-    --red:#c0392b;
-    --red-soft:rgba(192,57,43,0.10);
-    --slate:#64748b;
-    --slate-soft:rgba(100,116,139,0.10);
-    --display:'Helvetica Neue', Helvetica, Arial, sans-serif;
-    --body:'Helvetica Neue', Helvetica, Arial, sans-serif;
-    --mono:'Helvetica Neue', Helvetica, Arial, sans-serif;
-    --radius:6px;
-  }
-  *{box-sizing:border-box;}
-  html,body{margin:0;padding:0;}
-  body{
-    background:var(--bg);
-    color:var(--text);
-    font-family:var(--body);
-    -webkit-font-smoothing:antialiased;
-  }
-  button{font-family:var(--body);cursor:pointer;}
-  input,select,textarea{font-family:var(--body);}
+:root{
+  --bg:#ffffff;--surface:#f5f7fa;--surface-2:#eef1f5;--border:#dde2e9;
+  --text:#0f1f2e;--text-dim:#4a5a6a;--text-faint:#8a97a6;
+  --navy:#1a4b6e;--navy-soft:rgba(26,75,110,0.10);
+  --green:#00835d;--green-soft:rgba(0,131,93,0.10);
+  --amber:#b45309;--amber-soft:rgba(180,83,9,0.10);
+  --red:#c0392b;--red-soft:rgba(192,57,43,0.10);
+  --slate:#64748b;--slate-soft:rgba(100,116,139,0.10);
+  --font:'Helvetica Neue',Helvetica,Arial,sans-serif;--radius:6px;
+}
+*{box-sizing:border-box;}html,body{margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14px;-webkit-font-smoothing:antialiased;}
+button{font-family:var(--font);cursor:pointer;}
+input,select,textarea{font-family:var(--font);}
 
-  /* ---------- Layout ---------- */
-  .app{display:grid;grid-template-columns:240px 1fr;min-height:100vh;}
-  @media (max-width:780px){
-    .app{grid-template-columns:1fr;}
-    .sidebar{position:static;flex-direction:row;overflow-x:auto;border-right:none;border-bottom:1px solid var(--border);}
-    .sidebar .brand{display:none;}
-    .nav{flex-direction:row;}
-  }
+/* Layout */
+.app{display:grid;grid-template-columns:220px 1fr;min-height:100vh;}
 
-  .sidebar{
-    background:var(--surface);
-    border-right:1px solid var(--border);
-    display:flex;
-    flex-direction:column;
-    padding:22px 0;
-    position:sticky;
-    top:0;
-    height:100vh;
-  }
-  .brand{padding:0 22px 22px;border-bottom:1px solid var(--border);margin-bottom:14px;}
-  .brand-mark{font-family:var(--display);font-weight:700;font-size:20px;letter-spacing:0.5px;color:var(--text);}
-  .brand-mark span{color:var(--accent);}
-  .brand-eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:1.5px;color:var(--text-faint);text-transform:uppercase;margin-top:4px;}
+/* Sidebar */
+.sidebar{background:var(--navy);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto;}
+.brand{padding:20px 18px 16px;border-bottom:1px solid rgba(255,255,255,0.12);}
+.brand-mark{font-size:22px;font-weight:700;letter-spacing:0.5px;}
+.brand-mark .re{color:#fff;}.brand-mark .nw{color:#4dd4a8;}
+.brand-sub{font-size:10px;color:rgba(255,255,255,0.4);letter-spacing:1.5px;text-transform:uppercase;margin-top:3px;}
+.role-badge{margin:10px 14px;background:rgba(255,255,255,0.08);border-radius:4px;padding:8px 10px;font-size:11px;color:rgba(255,255,255,0.6);}
+.role-badge strong{display:block;color:#fff;font-size:12px;margin-bottom:4px;}
+.role-select{width:100%;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.18);color:#fff;border-radius:3px;padding:4px 6px;font-size:11px;}
+.role-select option{background:#1a4b6e;color:#fff;}
+.nav-section{padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.07);}
+.nav-label{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.3);padding:8px 18px 3px;}
+.nav-item{display:flex;align-items:center;gap:9px;padding:9px 18px;font-size:13px;color:rgba(255,255,255,0.6);cursor:pointer;border-left:2px solid transparent;transition:all 0.1s;white-space:nowrap;}
+.nav-item:hover{color:#fff;background:rgba(255,255,255,0.07);}
+.nav-item.active{color:#fff;border-left-color:#4dd4a8;background:rgba(255,255,255,0.1);font-weight:500;}
+.nav-item.locked{opacity:0.3;cursor:not-allowed;pointer-events:none;}
+.nav-item .ico{width:16px;text-align:center;flex-shrink:0;font-style:normal;}
+.sidebar-footer{margin-top:auto;padding:12px 18px;border-top:1px solid rgba(255,255,255,0.07);font-size:10px;color:rgba(255,255,255,0.25);}
 
-  .nav{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px;}
-  .nav-item{padding:11px 22px;font-size:13.5px;color:var(--text-dim);border-left:2px solid transparent;cursor:pointer;display:flex;align-items:center;gap:10px;white-space:nowrap;}
-  .nav-item:hover{color:var(--text);background:var(--surface-2);}
-  .nav-item.active{color:var(--text);border-left-color:var(--accent);background:var(--surface-2);font-weight:500;}
-  .nav-dot{width:5px;height:5px;border-radius:50%;background:var(--text-faint);flex-shrink:0;}
-  .nav-item.active .nav-dot{background:var(--accent);}
+/* Main */
+.main{padding:28px 36px 60px;max-width:1100px;}
+.page-header{margin-bottom:20px;display:flex;align-items:flex-start;justify-content:space-between;}
+.page-header-left h1{font-size:21px;font-weight:600;margin:0 0 3px;color:var(--navy);}
+.page-header-left .sub{font-size:12px;color:var(--text-faint);}
+.divider{height:2px;background:linear-gradient(90deg,var(--navy) 0%,transparent 50%);opacity:0.15;margin-bottom:22px;border-radius:2px;}
+.panel{display:none;}.panel.active{display:block;animation:fi 0.2s ease;}
+@keyframes fi{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:translateY(0);}}
 
-  .sidebar-footer{margin-top:auto;padding:14px 22px 4px;font-family:var(--mono);font-size:10.5px;color:var(--text-faint);border-top:1px solid var(--border);padding-top:14px;}
+/* Stats */
+.stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px;}
+.stat-card{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:18px;}
+.stat-card.warn{border-left:3px solid var(--amber);}
+.stat-num{font-size:28px;font-weight:600;color:var(--navy);}
+.stat-label{font-size:12px;color:var(--text-dim);margin-top:4px;}
+.stat-sub{font-size:11px;color:var(--text-faint);margin-top:3px;}
 
-  /* ---------- Main ---------- */
-  .main{padding:28px 36px 60px;max-width:1080px;}
-  .topbar{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:4px;}
-  .topbar h1{font-family:var(--display);font-size:24px;font-weight:600;margin:0;}
-  .topbar .sub{font-size:12.5px;color:var(--text-faint);font-family:var(--mono);}
-  .pulse-rule{height:2px;background:linear-gradient(90deg,var(--accent) 0%, transparent 40%);background-size:200% 100%;margin:14px 0 28px;border-radius:2px;animation:pulse-move 3.5s linear infinite;opacity:0.7;}
-  @keyframes pulse-move{0%{background-position:0% 0;}100%{background-position:-200% 0;}}
-  @media (prefers-reduced-motion: reduce){.pulse-rule{animation:none;}}
+/* Blocks */
+.block{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:20px 22px;margin-bottom:16px;}
+.block-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.block h2{font-size:14px;font-weight:600;margin:0;color:var(--navy);}
+.block .desc{font-size:12px;color:var(--text-dim);margin:4px 0 14px;line-height:1.5;}
 
-  .panel{display:none;}
-  .panel.active{display:block;animation:fadein 0.25s ease;}
-  @keyframes fadein{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:translateY(0);}}
+/* Tables */
+table{width:100%;border-collapse:collapse;font-size:13px;}
+thead th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:0.4px;color:var(--text-faint);font-weight:500;padding:0 10px 10px;border-bottom:1px solid var(--border);}
+tbody td{padding:11px 10px;border-bottom:1px solid var(--border);color:var(--text);}
+tbody tr:last-child td{border-bottom:none;}
+.clickable{cursor:pointer;}.clickable:hover{background:var(--surface);}
+.mono{font-size:12px;color:var(--text-dim);}
 
-  /* ---------- Stat cards ---------- */
-  .stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:30px;}
-  @media (max-width:780px){.stat-row{grid-template-columns:repeat(2,1fr);}}
-  .stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;}
-  .stat-num{font-family:var(--mono);font-size:28px;font-weight:500;}
-  .stat-label{font-size:12px;color:var(--text-dim);margin-top:4px;}
-  .led{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:7px;position:relative;top:-1px;}
-  .led.green{background:var(--green);box-shadow:0 0 6px var(--green);animation:ledpulse 2s ease-in-out infinite;}
-  .led.amber{background:var(--amber);box-shadow:0 0 6px var(--amber);}
-  .led.red{background:var(--red);box-shadow:0 0 6px var(--red);}
-  .led.slate{background:var(--text-faint);}
-  @keyframes ledpulse{0%,100%{opacity:1;}50%{opacity:0.45;}}
-  @media (prefers-reduced-motion: reduce){.led{animation:none;}}
+/* Filters */
+.filters{display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;align-items:center;}
+.filters input,.filters select{background:var(--bg);border:1px solid var(--border);color:var(--text);border-radius:4px;padding:7px 10px;font-size:13px;outline:none;}
+.filters input{min-width:200px;}.filters input:focus,.filters select:focus{border-color:var(--navy);}
+.filter-count{font-size:12px;color:var(--text-faint);margin-left:auto;}
 
-  /* ---------- Section blocks ---------- */
-  .block{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:22px 24px;margin-bottom:20px;}
-  .block h2{font-family:var(--display);font-size:15px;font-weight:600;margin:0 0 4px;}
-  .block .desc{font-size:12.5px;color:var(--text-dim);margin:0 0 18px;line-height:1.5;}
+/* Pills */
+.pill{display:inline-block;font-size:11px;padding:3px 8px;border-radius:3px;font-weight:500;white-space:nowrap;}
+.pill.active{background:var(--green-soft);color:var(--green);}
+.pill.pending{background:var(--amber-soft);color:var(--amber);}
+.pill.failed{background:var(--red-soft);color:var(--red);}
+.pill.offline,.pill.suspended{background:var(--slate-soft);color:var(--slate);}
+.pill.invited{background:var(--navy-soft);color:var(--navy);}
+.led{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:5px;vertical-align:middle;}
+.led.g{background:var(--green);}.led.a{background:var(--amber);}.led.r{background:var(--red);}.led.s{background:var(--text-faint);}
 
-  table{width:100%;border-collapse:collapse;font-size:13px;}
-  thead th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:0.6px;color:var(--text-faint);font-weight:500;padding:0 10px 10px;border-bottom:1px solid var(--border);}
-  tbody td{padding:11px 10px;border-bottom:1px solid var(--border);color:var(--text);}
-  tbody tr:last-child td{border-bottom:none;}
-  tbody tr{cursor:pointer;}
-  tbody tr:hover{background:var(--surface-2);}
-  .mono{font-family:var(--mono);font-size:12.5px;color:var(--text-dim);}
+/* Forms */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px 16px;}
+.field{display:flex;flex-direction:column;gap:5px;}.field.full{grid-column:1/-1;}
+.field label{font-size:12px;color:var(--text-dim);font-weight:500;}
+.field input,.field select,.field textarea{background:var(--bg);border:1px solid var(--border);color:var(--text);border-radius:4px;padding:9px 11px;font-size:13px;outline:none;}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--navy);}
+.field textarea{resize:vertical;min-height:75px;}
+.hint{font-size:11px;color:var(--text-faint);margin-top:2px;}
+.form-actions{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap;}
 
-  .pill{display:inline-block;font-size:11px;font-family:var(--mono);padding:3px 8px;border-radius:3px;letter-spacing:0.3px;}
-  .pill.pending{background:var(--amber-soft);color:var(--amber);}
-  .pill.active{background:var(--green-soft);color:var(--green);}
+/* Buttons */
+.btn{background:var(--navy);color:#fff;border:none;padding:9px 18px;border-radius:4px;font-size:13px;font-weight:500;}
+.btn:hover{background:#15395a;}
+.btn.green-btn{background:var(--green);}.btn.green-btn:hover{background:#006b4c;}
+.btn.secondary{background:transparent;border:1px solid var(--border);color:var(--text);font-weight:400;}
+.btn.secondary:hover{border-color:var(--navy);color:var(--navy);}
+.btn.danger{background:var(--red);}.btn.danger:hover{background:#a02020;}
+.btn.sm{padding:5px 12px;font-size:12px;}
+.btn:focus-visible{outline:2px solid var(--navy);outline-offset:2px;}
 
-  /* ---------- Forms ---------- */
-  .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px 16px;}
-  @media (max-width:600px){.form-grid{grid-template-columns:1fr;}}
-  .field{display:flex;flex-direction:column;gap:6px;}
-  .field.full{grid-column:1/-1;}
-  .field label{font-size:12px;color:var(--text-dim);}
-  .field input,.field select,.field textarea{
-    background:var(--bg);
-    border:1px solid var(--border);
-    color:var(--text);
-    border-radius:4px;
-    padding:9px 11px;
-    font-size:13.5px;
-    outline:none;
-  }
-  .field input:focus,.field select:focus,.field textarea:focus{border-color:var(--accent);}
-  .hint{font-size:11.5px;color:var(--text-faint);margin-top:2px;}
+/* Tabs */
+.tabs{display:flex;border-bottom:1px solid var(--border);margin-bottom:18px;}
+.tab{padding:9px 16px;font-size:13px;color:var(--text-dim);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;}
+.tab:hover{color:var(--text);}.tab.active{color:var(--navy);border-bottom-color:var(--navy);font-weight:500;}
 
-  .btn{
-    background:var(--accent);
-    color:#ffffff;
-    border:none;
-    padding:10px 18px;
-    border-radius:4px;
-    font-size:13.5px;
-    font-weight:600;
-    margin-top:18px;
-  }
-  .btn:hover{background:#15395a;}
-  .btn.secondary{background:transparent;border:1px solid var(--border);color:var(--text);font-weight:500;}
-  .btn.secondary:hover{border-color:var(--accent);color:var(--accent);}
-  .btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
+/* Detail */
+.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px 24px;margin-bottom:16px;font-size:13px;}
+.dfield b{display:block;font-size:10px;color:var(--text-faint);font-weight:500;margin-bottom:3px;text-transform:uppercase;letter-spacing:0.4px;}
 
-  .empty{padding:30px 0;text-align:center;color:var(--text-faint);font-size:13px;}
+/* Alerts */
+.alert-bar{background:var(--amber-soft);border:1px solid var(--amber);border-radius:var(--radius);padding:11px 14px;font-size:13px;color:var(--amber);margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+.alert-bar.red{background:var(--red-soft);border-color:var(--red);color:var(--red);}
+.alert-bar.green{background:var(--green-soft);border-color:var(--green);color:var(--green);}
 
-  /* ---------- Toast ---------- */
-  #toast{
-    position:fixed;bottom:24px;right:24px;
-    background:var(--surface-2);border:1px solid var(--accent);
-    color:var(--text);padding:13px 18px;border-radius:6px;
-    font-size:13px;display:none;max-width:320px;
-    box-shadow:0 8px 24px rgba(0,0,0,0.4);
-    font-family:var(--mono);
-  }
+/* Pipeline */
+.pipe-group{margin-bottom:16px;}
+.pipe-head{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius) var(--radius) 0 0;cursor:pointer;}
+.pipe-head h3{font-size:13px;font-weight:600;margin:0;flex:1;}
+.pipe-count{background:var(--navy-soft);color:var(--navy);font-size:11px;font-weight:600;padding:2px 8px;border-radius:10px;}
+.pipe-body{border:1px solid var(--border);border-top:none;border-radius:0 0 var(--radius) var(--radius);overflow:hidden;}
+.pipe-body.collapsed{display:none;}
 
-  /* household detail drawer */
-  .detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px 24px;margin-bottom:16px;font-size:13px;}
-  .detail-grid div b{display:block;font-size:11px;color:var(--text-faint);font-weight:500;margin-bottom:2px;text-transform:uppercase;letter-spacing:0.4px;}
-  .device-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-top:1px solid var(--border);font-size:13px;}
-  .actions-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px;}
+/* Audit */
+.audit-row{display:flex;gap:12px;padding:9px 0;border-bottom:1px solid var(--border);font-size:12.5px;}
+.audit-row:last-child{border-bottom:none;}
+.audit-time{color:var(--text-faint);white-space:nowrap;min-width:130px;}
+.audit-actor{color:var(--navy);font-weight:500;min-width:90px;}
+.audit-action{color:var(--text-dim);}
+
+/* Consent */
+.consent-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);font-size:13px;}
+.consent-row:last-child{border-bottom:none;}
+
+/* Access denied */
+.no-access{text-align:center;padding:60px 20px;color:var(--text-faint);}
+.no-access .lock{font-size:36px;margin-bottom:12px;}
+.no-access h3{color:var(--text-dim);margin:0 0 8px;}
+
+/* Device row */
+.dev-row{display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--border);font-size:13px;}
+.dev-row:last-child{border-bottom:none;}
+
+/* Toast */
+#toast{position:fixed;bottom:24px;right:24px;background:var(--navy);color:#fff;padding:12px 18px;border-radius:6px;font-size:13px;display:none;max-width:320px;box-shadow:0 8px 24px rgba(0,0,0,0.18);z-index:1000;}
+.empty{padding:28px;text-align:center;color:var(--text-faint);font-size:13px;}
+
+@media(max-width:780px){
+  .app{grid-template-columns:1fr;}.sidebar{position:static;height:auto;}
+  .stat-row{grid-template-columns:repeat(2,1fr);}
+  .form-grid,.detail-grid{grid-template-columns:1fr;}
+  .main{padding:16px 16px 40px;}
+}
 </style>
 </head>
 <body>
-
 <div class="app">
-  <aside class="sidebar">
-    <div class="brand">
-      <div class="brand-mark"><span style="color:var(--accent)">RE</span><span style="color:var(--green)">NEW</span></div>
-      <div class="brand-eyebrow">Admin Console</div>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="brand">
+    <div class="brand-mark"><span class="re">RE</span><span class="nw">NEW</span></div>
+    <div class="brand-sub">Admin Console</div>
+  </div>
+  <div class="role-badge">
+    <strong id="roleLabel">Super Admin</strong>
+    Viewing as:
+    <select class="role-select" id="roleSelect" onchange="changeRole(this.value)">
+      <option value="superadmin">Super Admin</option>
+      <option value="admin">Admin</option>
+      <option value="customercare">Customer Care</option>
+      <option value="operations">Operations</option>
+    </select>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-label">Platform</div>
+    <div class="nav-item active" data-panel="overview"><i class="ico">◈</i> Overview</div>
+    <div class="nav-item" data-panel="customers"><i class="ico">👤</i> Customers</div>
+    <div class="nav-item" data-panel="onboarding"><i class="ico">⟳</i> Onboarding</div>
+    <div class="nav-item" data-panel="devices"><i class="ico">⚡</i> Devices</div>
+  </div>
+  <div class="nav-section">
+    <div class="nav-label">Operations</div>
+    <div class="nav-item" data-panel="sitelog"><i class="ico">📋</i> Site Log</div>
+    <div class="nav-item" data-panel="notifications"><i class="ico">🔔</i> Notifications</div>
+    <div class="nav-item" data-panel="emaillog"><i class="ico">✉</i> Email Processing</div>
+    <div class="nav-item" data-panel="export"><i class="ico">↓</i> Export & Reports</div>
+  </div>
+  <div class="nav-section" id="superAdminNav">
+    <div class="nav-label">Super Admin</div>
+    <div class="nav-item" data-panel="tariff" id="navTariff"><i class="ico">€</i> Tariff Config</div>
+    <div class="nav-item" data-panel="adminusers" id="navAdminUsers"><i class="ico">🔑</i> Admin Users</div>
+  </div>
+  <div class="sidebar-footer">v0.3 PROTOTYPE · NOT LIVE</div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+
+<!-- ============ OVERVIEW ============ -->
+<section class="panel active" id="panel-overview">
+  <div class="page-header">
+    <div class="page-header-left">
+      <h1>Overview</h1>
+      <div class="sub">Platform health at a glance</div>
     </div>
-    <ul class="nav">
-      <li class="nav-item active" data-panel="overview"><span class="nav-dot"></span>Overview</li>
-      <li class="nav-item" data-panel="households"><span class="nav-dot"></span>Households</li>
-      <li class="nav-item" data-panel="newaccount"><span class="nav-dot"></span>New Account</li>
-      <li class="nav-item" data-panel="devices"><span class="nav-dot"></span>Link Devices</li>
-      <li class="nav-item" data-panel="sitelog"><span class="nav-dot"></span>Site Log</li>
-      <li class="nav-item" data-panel="email"><span class="nav-dot"></span>Welcome Email</li>
-    </ul>
-    <div class="sidebar-footer">v0.1 PROTOTYPE<br>NOT CONNECTED TO LIVE DATA</div>
-  </aside>
+  </div>
+  <div class="divider"></div>
+  <div id="priceFeedAlert" class="alert-bar" style="display:none;">⚠ Price feed alert — no data received for &gt;15 minutes. Customer app showing "Price data temporarily unavailable".</div>
+  <div class="stat-row" id="statRow"></div>
+  <div class="block">
+    <div class="block-header"><h2>Recently Updated Accounts</h2></div>
+    <table>
+      <thead><tr><th>Customer</th><th>Status</th><th>FLUX</th><th>LEAF</th><th>Updated</th></tr></thead>
+      <tbody id="recentTable"></tbody>
+    </table>
+  </div>
+  <div class="block warn">
+    <div class="block-header"><h2>⚠ Devices Offline &gt;24h</h2></div>
+    <div id="offlineAlerts"><div class="empty">No offline alerts.</div></div>
+  </div>
+</section>
 
-  <main class="main">
+<!-- ============ CUSTOMERS ============ -->
+<section class="panel" id="panel-customers">
+  <div class="page-header">
+    <div class="page-header-left">
+      <h1>Customers</h1>
+      <div class="sub">All customer accounts</div>
+    </div>
+    <button class="btn" onclick="showCreateAccount()">+ New Account</button>
+  </div>
+  <div class="divider"></div>
 
-    <!-- OVERVIEW -->
-    <section class="panel active" id="panel-overview">
-      <div class="topbar"><h1>Overview</h1><span class="sub">EPIC-T01 / EPIC-T02</span></div>
-      <div class="pulse-rule"></div>
-      <div class="stat-row" id="statRow"></div>
-      <div class="block">
-        <h2>Recently updated households</h2>
-        <p class="desc">The five most recently touched accounts across all stages.</p>
-        <table>
-          <thead><tr><th>Household</th><th>Status</th><th>Flux</th><th>Leaf</th><th>Updated</th></tr></thead>
-          <tbody id="recentTable"></tbody>
-        </table>
+  <!-- List view -->
+  <div id="customerListView">
+    <div class="block">
+      <div class="filters">
+        <input type="text" id="custSearch" placeholder="Search name, email or MPRN…" oninput="renderCustomerList()">
+        <select id="custStatusFilter" onchange="renderCustomerList()">
+          <option value="">All statuses</option>
+          <option>Pending Arden Validation</option>
+          <option>Eligibility Failed</option>
+          <option>Awaiting Smart Meter Upgrade</option>
+          <option>Eligible — Proceeding to Switch</option>
+          <option>Switch Rejected</option>
+          <option>Switch Confirmed</option>
+          <option>Active</option>
+          <option>Suspended</option>
+          <option>Closed</option>
+        </select>
+        <select id="custDeviceFilter" onchange="renderCustomerList()">
+          <option value="">All device states</option>
+          <option value="both">Both linked</option>
+          <option value="partial">Partially linked</option>
+          <option value="none">No devices</option>
+        </select>
+        <span class="filter-count" id="custCount"></span>
       </div>
-    </section>
+      <table>
+        <thead><tr><th>ID</th><th>Name</th><th>Email</th><th>MPRN</th><th>Status</th><th>Devices</th><th>Created</th></tr></thead>
+        <tbody id="customerTable"></tbody>
+      </table>
+    </div>
+  </div>
 
-    <!-- HOUSEHOLDS -->
-    <section class="panel" id="panel-households">
-      <div class="topbar"><h1>Households</h1><span class="sub">All accounts</span></div>
-      <div class="pulse-rule"></div>
-      <div class="block">
-        <h2>All households</h2>
-        <p class="desc">Click a row to view full installation and account detail.</p>
-        <table>
-          <thead><tr><th>ID</th><th>Name</th><th>Eircode</th><th>MPRN</th><th>Status</th><th>Devices</th></tr></thead>
-          <tbody id="householdsTable"></tbody>
-        </table>
+  <!-- Detail view -->
+  <div id="customerDetailView" style="display:none;">
+    <button class="btn secondary sm" onclick="closeCustomerDetail()" style="margin-bottom:14px;">← Back to list</button>
+    <div class="block">
+      <div id="custDetailHeader"></div>
+      <div class="tabs" id="custTabs">
+        <div class="tab active" data-ctab="profile">Profile</div>
+        <div class="tab" data-ctab="devices">Devices</div>
+        <div class="tab" data-ctab="consents">Consents</div>
+        <div class="tab" data-ctab="auditlog">Audit Log</div>
+        <div class="tab" data-ctab="comms">Notifications</div>
       </div>
-      <div class="block" id="detailBlock" style="display:none;"></div>
-    </section>
+      <div id="custTabContent"></div>
+    </div>
+  </div>
 
-    <!-- NEW ACCOUNT -->
-    <section class="panel" id="panel-newaccount">
-      <div class="topbar"><h1>New Account</h1><span class="sub">T02-S01</span></div>
-      <div class="pulse-rule"></div>
-      <div class="block">
-        <h2>Create user account</h2>
-        <p class="desc">Creates the account with status "pending activation" and generates a household ID. Mirrors T02-S01 AC01.</p>
-        <form id="newAccountForm">
-          <div class="form-grid">
-            <div class="field"><label>Full name</label><input required name="name" placeholder="e.g. Aoife Byrne"></div>
-            <div class="field"><label>Email address</label><input required type="email" name="email" placeholder="name@example.com"></div>
-            <div class="field"><label>Phone number</label><input required name="phone" placeholder="+353 ..."></div>
-            <div class="field"><label>MPRN</label><input required name="mprn" class="mono" placeholder="10-digit meter reference"></div>
-            <div class="field full"><label>Home address</label><input required name="address" placeholder="Street, Town, County"></div>
-            <div class="field"><label>Eircode</label><input required name="eircode" class="mono" placeholder="A65 F4E2"></div>
-          </div>
-          <button type="submit" class="btn">Create account</button>
-        </form>
-      </div>
-    </section>
-
-    <!-- LINK DEVICES -->
-    <section class="panel" id="panel-devices">
-      <div class="topbar"><h1>Link Devices</h1><span class="sub">T01-S02 · T01-S03 · T02-S01</span></div>
-      <div class="pulse-rule"></div>
-      <div class="block">
-        <h2>Link Flux &amp; Leaf to a household</h2>
-        <p class="desc">Wi-Fi password is never entered or stored here — only the network name, for reference. Matches the install note in T01-S03.</p>
-        <form id="devicesForm">
-          <div class="form-grid">
-            <div class="field full"><label>Household</label><select required name="household" id="householdSelect"></select></div>
-            <div class="field"><label>Flux device ID</label><input required name="fluxId" class="mono" placeholder="FLX-XXXXX"></div>
-            <div class="field"><label>Flux install date</label><input required type="date" name="fluxDate"></div>
-            <div class="field"><label>Leaf device ID</label><input required name="leafId" class="mono" placeholder="LEAF-XXXXX"></div>
-            <div class="field"><label>Leaf install date</label><input required type="date" name="leafDate"></div>
-            <div class="field full"><label>Wi-Fi network name (SSID only)</label><input required name="ssid" placeholder="e.g. Byrne_Home_5G"></div>
-          </div>
-          <button type="submit" class="btn">Link devices &amp; mark online</button>
-        </form>
-      </div>
-    </section>
-
-    <!-- SITE LOG -->
-    <section class="panel" id="panel-sitelog">
-      <div class="topbar"><h1>Site Log</h1><span class="sub">T01-S01</span></div>
-      <div class="pulse-rule"></div>
-      <div class="block">
-        <h2>Record a pre-installation site check</h2>
-        <p class="desc">One entry per visit. A failed check should trigger a reschedule with the end user.</p>
-        <form id="siteLogForm">
-          <div class="form-grid">
-            <div class="field full"><label>Household</label><select required name="household" id="householdSelectLog"></select></div>
-            <div class="field"><label>Consumer unit access</label>
-              <select required name="result"><option value="PASS">PASS — ready for Flux</option><option value="FAIL">FAIL</option></select>
-            </div>
-            <div class="field"><label>Leaf socket location</label><input name="socket" placeholder="e.g. Hallway socket, 2m from fuse board"></div>
-            <div class="field full"><label>Notes (reason if failed)</label><input name="notes" placeholder="Optional"></div>
-          </div>
-          <button type="submit" class="btn">Save site log entry</button>
-        </form>
-      </div>
-      <div class="block">
-        <h2>Recent entries</h2>
-        <table>
-          <thead><tr><th>Household</th><th>Result</th><th>Socket location</th><th>Notes</th></tr></thead>
-          <tbody id="siteLogTable"></tbody>
-        </table>
-      </div>
-    </section>
-
-    <!-- WELCOME EMAIL -->
-    <section class="panel" id="panel-email">
-      <div class="topbar"><h1>Welcome Email</h1><span class="sub">T02-S02</span></div>
-      <div class="pulse-rule"></div>
-      <div class="block">
-        <h2>Send login instructions</h2>
-        <p class="desc">Only available once both devices are linked. Sends a magic link valid for 24 hours, per the spec recommendation.</p>
+  <!-- Create account modal inline -->
+  <div id="createAccountPanel" style="display:none;">
+    <button class="btn secondary sm" onclick="hideCreateAccount()" style="margin-bottom:14px;">← Back</button>
+    <div class="block">
+      <h2>Create New Customer Account</h2>
+      <p class="desc">Creates account with status "Pending Arden Validation" and generates a RENEW Customer ID. (AUS-03)</p>
+      <form id="newAccountForm">
         <div class="form-grid">
-          <div class="field full"><label>Household</label><select id="emailHouseholdSelect"></select></div>
+          <div class="field"><label>Full name</label><input required name="name" placeholder="e.g. Aoife Byrne"></div>
+          <div class="field"><label>Email address</label><input required type="email" name="email" placeholder="name@example.com"></div>
+          <div class="field"><label>Phone number</label><input required name="phone" placeholder="+353 …"></div>
+          <div class="field"><label>MPRN</label><input required name="mprn" class="mono" placeholder="10-digit meter reference"></div>
+          <div class="field full"><label>Home address</label><input required name="address" placeholder="Street, Town, County"></div>
+          <div class="field"><label>Eircode</label><input required name="eircode" class="mono" placeholder="A65 F4E2"></div>
+          <div class="field"><label>Billing cycle start date</label><input type="date" name="billingStart"><div class="hint">Optional — can be set later</div></div>
         </div>
-        <button class="btn" id="sendEmailBtn">Send welcome email</button>
+        <div class="form-actions"><button type="submit" class="btn">Create Account</button><button type="button" class="btn secondary" onclick="hideCreateAccount()">Cancel</button></div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ONBOARDING PIPELINE ============ -->
+<section class="panel" id="panel-onboarding">
+  <div class="page-header">
+    <div class="page-header-left">
+      <h1>Onboarding Pipeline</h1>
+      <div class="sub">Customers grouped by onboarding status (AUS-24)</div>
+    </div>
+  </div>
+  <div class="divider"></div>
+  <div id="ardenAlert" class="alert-bar" style="display:none;">📧 1 Arden email failed to parse — <a href="#" onclick="switchPanel('emaillog');return false;" style="color:inherit;font-weight:600;">Review in Email Processing</a></div>
+  <div id="pipelineGroups"></div>
+</section>
+
+<!-- ============ DEVICES ============ -->
+<section class="panel" id="panel-devices">
+  <div class="page-header">
+    <div class="page-header-left">
+      <h1>Devices</h1>
+      <div class="sub">All FLUX and LEAF hardware (AUS-08)</div>
+    </div>
+  </div>
+  <div class="divider"></div>
+  <div class="stat-row" style="grid-template-columns:repeat(4,1fr);" id="deviceStatRow"></div>
+  <div class="block">
+    <div class="filters">
+      <select id="devTypeFilter" onchange="renderDevicesTable()"><option value="">All types</option><option>FLUX</option><option>LEAF</option></select>
+      <select id="devStatusFilter" onchange="renderDevicesTable()"><option value="">All connectivity</option><option value="Online">Online</option><option value="Offline">Offline</option><option value="Never Connected">Never Connected</option></select>
+      <span class="filter-count" id="devCount"></span>
+    </div>
+    <table>
+      <thead><tr><th>Serial</th><th>Type</th><th>Customer</th><th>Installed</th><th>Connectivity</th><th>Last Data</th><th>Actions</th></tr></thead>
+      <tbody id="devicesTable"></tbody>
+    </table>
+  </div>
+
+  <!-- Link Devices Form -->
+  <div class="block" id="linkDeviceRole">
+    <h2>Link Devices to a Customer</h2>
+    <p class="desc">Link FLUX and LEAF serial numbers to a household account. Available to Operations and above. (AUS-09)</p>
+    <form id="devicesForm">
+      <div class="form-grid">
+        <div class="field full"><label>Customer Account</label><select required name="household" id="householdSelect"></select></div>
+        <div class="field"><label>FLUX Device Serial</label><input required name="fluxId" class="mono" placeholder="FLX-XXXXX"></div>
+        <div class="field"><label>FLUX Install Date</label><input required type="date" name="fluxDate"></div>
+        <div class="field"><label>LEAF Device Serial</label><input required name="leafId" class="mono" placeholder="LEAF-XXXXX"></div>
+        <div class="field"><label>LEAF Install Date</label><input required type="date" name="leafDate"></div>
+        <div class="field full"><label>Wi-Fi Network Name (SSID only — no password)</label><input required name="ssid" placeholder="e.g. Smith_Home_5G"></div>
       </div>
-    </section>
+      <div class="form-actions"><button type="submit" class="btn">Link Devices & Set Active</button></div>
+    </form>
+  </div>
+</section>
 
-  </main>
+<!-- ============ SITE LOG ============ -->
+<section class="panel" id="panel-sitelog">
+  <div class="page-header">
+    <div class="page-header-left">
+      <h1>Site Log</h1>
+      <div class="sub">Pre-installation site visit records (AUS-28)</div>
+    </div>
+  </div>
+  <div class="divider"></div>
+  <div class="block">
+    <h2>Record Site Visit</h2>
+    <p class="desc">Log the outcome of a site visit. A failed check prompts rescheduling.</p>
+    <form id="siteLogForm">
+      <div class="form-grid">
+        <div class="field full"><label>Customer Account</label><select required name="household" id="householdSelectLog"></select></div>
+        <div class="field"><label>Visit Date</label><input required type="date" name="visitDate"></div>
+        <div class="field"><label>Consumer Unit Access</label>
+          <select required name="result"><option value="PASS">PASS — Ready for FLUX</option><option value="FAIL">FAIL — Reschedule required</option></select>
+        </div>
+        <div class="field"><label>Installer Name</label><input name="installer" placeholder="Engineer full name"></div>
+        <div class="field"><label>LEAF Socket Location</label><input name="socket" placeholder="e.g. Hallway socket, 2m from fuse board"></div>
+        <div class="field"><label>FLUX Install Status</label>
+          <select name="fluxStatus"><option value="Installed">Installed</option><option value="Pending">Pending</option><option value="Failed">Failed</option></select>
+        </div>
+        <div class="field"><label>LEAF Install Status</label>
+          <select name="leafStatus"><option value="Installed">Installed</option><option value="Pending">Pending</option><option value="Failed">Failed</option></select>
+        </div>
+        <div class="field full"><label>Notes / Failure Reason</label><textarea name="notes" placeholder="Optional — required if failed"></textarea></div>
+      </div>
+      <div class="form-actions"><button type="submit" class="btn">Save Site Log</button></div>
+    </form>
+  </div>
+  <div class="block">
+    <h2>Recent Site Visits</h2>
+    <table>
+      <thead><tr><th>Customer</th><th>Date</th><th>Result</th><th>Installer</th><th>FLUX</th><th>LEAF</th><th>Notes</th></tr></thead>
+      <tbody id="siteLogTable"></tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ============ NOTIFICATIONS ============ -->
+<section class="panel" id="panel-notifications">
+  <div class="page-header">
+    <div class="page-header-left">
+      <h1>Notifications</h1>
+      <div class="sub">Communication history and manual send (AUS-17, 18, 19)</div>
+    </div>
+  </div>
+  <div class="divider"></div>
+  <div class="stat-row" style="grid-template-columns:repeat(3,1fr);">
+    <div class="stat-card"><div class="stat-num">47</div><div class="stat-label">Total sent today</div></div>
+    <div class="stat-card"><div class="stat-num">3</div><div class="stat-label warn" style="color:var(--amber);">Failed deliveries</div></div>
+    <div class="stat-card"><div class="stat-num">94%</div><div class="stat-label">Delivery success rate</div></div>
+  </div>
+  <div class="block">
+    <h2>Send Manual Communication</h2>
+    <p class="desc">Manually send an email or in-app message to a customer. Record is saved to their notification log. (AUS-19)</p>
+    <form id="manualCommForm">
+      <div class="form-grid">
+        <div class="field"><label>Customer</label><select id="commHouseholdSelect" name="household"></select></div>
+        <div class="field"><label>Channel</label>
+          <select name="channel"><option>Email</option><option>In-App</option><option>SMS</option></select>
+        </div>
+        <div class="field"><label>Subject</label><input name="subject" placeholder="Message subject"></div>
+        <div class="field"><label>Notification Type</label>
+          <select name="type"><option>Support Update</option><option>Account Notice</option><option>Price Alert</option><option>Installation Update</option><option>General</option></select>
+        </div>
+        <div class="field full"><label>Message</label><textarea name="message" placeholder="Message content…"></textarea></div>
+      </div>
+      <div class="form-actions"><button type="submit" class="btn">Send Message</button></div>
+    </form>
+  </div>
+  <div class="block">
+    <h2>Recent Notifications</h2>
+    <table>
+      <thead><tr><th>Customer</th><th>Type</th><th>Channel</th><th>Sent</th><th>Status</th></tr></thead>
+      <tbody id="notifTable"></tbody>
+    </table>
+  </div>
+  <div class="block">
+    <h2>Trigger Welcome Email</h2>
+    <p class="desc">Only available once both FLUX and LEAF are linked. Sends a magic link valid for 24 hours. (AUS-27)</p>
+    <div class="form-grid" style="max-width:500px;">
+      <div class="field full"><label>Customer</label><select id="emailHouseholdSelect"></select></div>
+    </div>
+    <div class="form-actions"><button class="btn" id="sendEmailBtn">Send Welcome Email</button></div>
+  </div>
+</section>
+
+<!-- ============ EMAIL PROCESSING ============ -->
+<section class="panel" id="panel-emaillog">
+  <div class="page-header">
+    <div class="page-header-left">
+      <h1>Email Processing</h1>
+      <div class="sub">Inbound Arden email parse log (AUS-31, 32)</div>
+    </div>
+  </div>
+  <div class="divider"></div>
+  <div class="block">
+    <div class="filters">
+      <select id="emailOutcomeFilter" onchange="renderEmailLog()">
+        <option value="">All outcomes</option>
+        <option value="Success">Success</option>
+        <option value="Manual Review Required">Manual Review Required</option>
+        <option value="Failed">Failed</option>
+      </select>
+    </div>
+    <table>
+      <thead><tr><th>Received</th><th>Subject</th><th>MPRN Extracted</th><th>Matched Customer</th><th>Outcome</th><th>Status Applied</th><th>Action</th></tr></thead>
+      <tbody id="emailLogTable"></tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ============ EXPORT & REPORTS ============ -->
+<section class="panel" id="panel-export">
+  <div class="page-header">
+    <div class="page-header-left">
+      <h1>Export & Reports</h1>
+      <div class="sub">Data exports and device fleet health (AUS-20–23)</div>
+    </div>
+  </div>
+  <div class="divider"></div>
+  <div class="block">
+    <h2>Device Fleet Health</h2>
+    <p class="desc">Real-time connectivity overview across all registered devices. (AUS-23)</p>
+    <div id="fleetHealth"></div>
+  </div>
+  <div class="block">
+    <h2>Export Customer Account Data</h2>
+    <p class="desc">Generates a CSV of customer records. Sensitive fields (IBAN, Wi-Fi passwords) are excluded. (AUS-21)</p>
+    <div class="form-grid" style="max-width:600px;">
+      <div class="field"><label>Date range from</label><input type="date" id="exportFrom"></div>
+      <div class="field"><label>Date range to</label><input type="date" id="exportTo"></div>
+      <div class="field"><label>Status filter</label>
+        <select id="exportStatus"><option value="">All statuses</option><option>Active</option><option>Pending Arden Validation</option><option>Eligibility Failed</option></select>
+      </div>
+    </div>
+    <div class="form-actions"><button class="btn" onclick="exportCustomerCSV()">Download Customer CSV</button></div>
+  </div>
+  <div class="block">
+    <h2>Export Notification & Communication Log</h2>
+    <p class="desc">Compliance report of all notifications sent. Includes delivery status and message content. (AUS-22)</p>
+    <div class="form-actions"><button class="btn secondary" onclick="exportNotifCSV()">Download Notification Log CSV</button></div>
+  </div>
+</section>
+
+<!-- ============ TARIFF CONFIG (Super Admin) ============ -->
+<section class="panel" id="panel-tariff">
+  <div class="page-header">
+    <div class="page-header-left">
+      <h1>Tariff Configuration</h1>
+      <div class="sub">Super Admin only — pricing thresholds and rate config (AUS-13–16)</div>
+    </div>
+  </div>
+  <div class="divider"></div>
+  <div id="tariffAccess">
+    <div class="block">
+      <h2>Price Threshold Bands</h2>
+      <p class="desc">Colour indicators shown in the customer app. Changes apply immediately to all customers. (AUS-13)</p>
+      <div class="form-grid" style="max-width:600px;">
+        <div class="field"><label>🟢 Green — below (c/kWh)</label><input type="number" id="threshGreen" value="10" step="0.1"></div>
+        <div class="field"><label>🔴 Red — above (c/kWh)</label><input type="number" id="threshRed" value="20" step="0.1"></div>
+        <div class="field full"><div class="hint">Amber = between Green and Red thresholds. Recommended defaults: &lt;10c green, 10–20c amber, &gt;20c red.</div></div>
+      </div>
+      <div class="form-actions"><button class="btn" onclick="saveTariffThresholds()">Save Thresholds</button></div>
+    </div>
+    <div class="block">
+      <h2>Base Unit Rate & Standing Charge</h2>
+      <p class="desc">Configures the total unit rate displayed to customers from the effective date. (AUS-14)</p>
+      <div class="form-grid" style="max-width:600px;">
+        <div class="field"><label>Base unit rate (c/kWh)</label><input type="number" id="baseRate" value="18.5" step="0.01"></div>
+        <div class="field"><label>Standing charge (€/day)</label><input type="number" id="standingCharge" value="0.45" step="0.01"></div>
+        <div class="field"><label>Effective from date</label><input type="date" id="rateEffective"></div>
+      </div>
+      <div class="form-actions"><button class="btn" onclick="saveBaseRate()">Save Rate Config</button></div>
+    </div>
+    <div class="block">
+      <h2>Notification Trigger Thresholds</h2>
+      <p class="desc">Price levels that trigger "cheap" and "expensive" push notifications. (AUS-15)</p>
+      <div class="form-grid" style="max-width:600px;">
+        <div class="field"><label>Cheap trigger — below (c/kWh)</label><input type="number" id="cheapTrigger" value="10" step="0.1"></div>
+        <div class="field"><label>Expensive trigger — above (c/kWh)</label><input type="number" id="expTrigger" value="20" step="0.1"></div>
+      </div>
+      <div class="form-actions"><button class="btn" onclick="saveNotifThresholds()">Save Triggers</button></div>
+    </div>
+    <div class="block">
+      <h2>Wholesale Price Data Feed</h2>
+      <p class="desc">SEMO / I-SEM API configuration. A gap &gt;15 min triggers a price feed alert in the dashboard. (AUS-16)</p>
+      <div class="form-grid" style="max-width:600px;">
+        <div class="field"><label>API Endpoint</label><input placeholder="https://api.semo.ie/..." value="https://api.semo.ie/v1/prices"></div>
+        <div class="field"><label>Polling interval (minutes)</label><input type="number" value="5" min="1"></div>
+        <div class="field full"><label>API Key</label><input type="password" placeholder="••••••••••••••••"></div>
+      </div>
+      <div class="form-actions">
+        <button class="btn" onclick="toast('Price feed configuration saved.')">Save Feed Config</button>
+        <button class="btn secondary" onclick="toast('Price feed alert: simulated for dashboard.')">Simulate Feed Alert</button>
+      </div>
+    </div>
+    <div class="block">
+      <h2>Configuration Change Log</h2>
+      <table>
+        <thead><tr><th>Timestamp</th><th>Admin</th><th>Field Changed</th><th>Previous</th><th>New Value</th></tr></thead>
+        <tbody id="tariffLogTable"></tbody>
+      </table>
+    </div>
+  </div>
+  <div id="tariffDenied" class="no-access" style="display:none;">
+    <div class="lock">🔒</div>
+    <h3>Super Admin Access Required</h3>
+    <p>Tariff configuration is restricted to Super Admin role only.</p>
+  </div>
+</section>
+
+<!-- ============ ADMIN USERS (Super Admin) ============ -->
+<section class="panel" id="panel-adminusers">
+  <div class="page-header">
+    <div class="page-header-left">
+      <h1>Admin Users</h1>
+      <div class="sub">Manage team access and roles (AUS-00b–g)</div>
+    </div>
+    <button class="btn" id="inviteBtn" onclick="showInviteForm()">+ Invite User</button>
+  </div>
+  <div class="divider"></div>
+  <div id="adminUsersAccess">
+    <div class="block" id="inviteFormBlock" style="display:none;">
+      <h2>Invite New Admin User</h2>
+      <p class="desc">An invitation email with a secure sign-up link will be sent. Link expires after 7 days. (AUS-00b)</p>
+      <form id="inviteForm">
+        <div class="form-grid" style="max-width:600px;">
+          <div class="field"><label>Email address</label><input required type="email" name="email" placeholder="colleague@renew.ie"></div>
+          <div class="field"><label>Assign role</label>
+            <select name="role">
+              <option>Admin</option>
+              <option>Customer Care</option>
+              <option>Operations</option>
+              <option>Super Admin</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-actions"><button type="submit" class="btn">Send Invite</button><button type="button" class="btn secondary" onclick="hideInviteForm()">Cancel</button></div>
+      </form>
+    </div>
+    <div class="block">
+      <div class="filters">
+        <select id="adminRoleFilter" onchange="renderAdminUsers()"><option value="">All roles</option><option>Super Admin</option><option>Admin</option><option>Customer Care</option><option>Operations</option></select>
+        <select id="adminStatusFilter" onchange="renderAdminUsers()"><option value="">All statuses</option><option>Active</option><option>Invited</option><option>Suspended</option></select>
+      </div>
+      <table>
+        <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Status</th><th>Invited</th><th>Last Login</th><th>Actions</th></tr></thead>
+        <tbody id="adminUsersTable"></tbody>
+      </table>
+    </div>
+  </div>
+  <div id="adminUsersDenied" class="no-access" style="display:none;">
+    <div class="lock">🔒</div>
+    <h3>Super Admin Access Required</h3>
+    <p>Admin user management is restricted to Super Admin role only.</p>
+  </div>
+</section>
+
+</main>
 </div>
-
 <div id="toast"></div>
 
 <script>
-/* ---------------- Mock data ---------------- */
-let households = [
-  {id:"HH-101", name:"Aoife Byrne", email:"aoife.byrne@example.com", phone:"+353 87 100 1101", address:"14 Elm Grove, Maynooth, Co. Kildare", eircode:"W23 X1A2", mprn:"10012345678", status:"active", flux:{id:"FLX-00451", date:"2026-04-02"}, leaf:{id:"LEAF-00451", date:"2026-04-02", ssid:"Byrne_Home_5G"}, emailSent:true, updated:"2 days ago"},
-  {id:"HH-102", name:"Padraig Walsh", email:"p.walsh@example.com", phone:"+353 86 200 2202", address:"7 Riverside Court, Lucan, Co. Dublin", eircode:"K78 P9N1", mprn:"10022345671", status:"pending activation", flux:{id:"FLX-00452", date:"2026-04-05"}, leaf:null, emailSent:false, updated:"1 day ago"},
-  {id:"HH-103", name:"Niamh O'Connor", email:"niamh.oconnor@example.com", phone:"+353 85 300 3303", address:"22 The Paddocks, Naas, Co. Kildare", eircode:"W91 D2E3", mprn:"10032345672", status:"pending activation", flux:null, leaf:null, emailSent:false, updated:"5 hours ago"},
+/* ===========================
+   DATA
+=========================== */
+let currentRole = 'superadmin';
+
+let customers = [
+  {id:'HH-101',name:'Aoife Byrne',email:'aoife.byrne@example.com',phone:'+353 87 100 1101',address:'14 Elm Grove, Maynooth, Co. Kildare',eircode:'W23 X1A2',mprn:'10012345678',renewId:'REN-0001',ardenId:'ARD-44512',status:'Active',flux:{id:'FLX-00451',date:'2026-04-02',conn:'Online',lastData:'2 min ago'},leaf:{id:'LEAF-00451',date:'2026-04-02',ssid:'Byrne_Home_5G',conn:'Online',lastData:'2 min ago'},emailSent:true,billingStart:'2026-04-05',tariff:'RENEW Dynamic v1',supplyStart:'2026-04-05',created:'2026-03-18',updated:'2 days ago',
+   assets:{solar:true,battery:false,ev:true,evCharger:true,heatPump:false},
+   auditLog:[{time:'2026-04-05 09:12',actor:'System',action:'Status changed: Switch Confirmed → Active'},{time:'2026-03-25 14:30',actor:'Admin',action:'Device FLX-00451 linked'},{time:'2026-03-18 10:00',actor:'Admin',action:'Account created'}],
+   consents:[{type:'Privacy Policy',status:'Given',version:'v1.2',ts:'2026-03-18 10:02'},{type:'Terms & Conditions',status:'Given',version:'v2.0',ts:'2026-03-18 10:02'},{type:'Dynamic Pricing Risk',status:'Given',version:'v1.0',ts:'2026-03-18 10:03'},{type:'Data Usage',status:'Given',version:'v1.1',ts:'2026-03-18 10:03'},{type:'Direct Debit Authorisation',status:'Given',version:'v1.0',ts:'2026-03-18 10:05'}],
+   notifs:[{type:'Welcome Email',channel:'Email',sent:'2026-04-02 11:00',status:'Delivered'},{type:'Price Alert — Cheap',channel:'Push',sent:'2026-04-10 02:15',status:'Delivered'}]},
+  {id:'HH-102',name:'Padraig Walsh',email:'p.walsh@example.com',phone:'+353 86 200 2202',address:'7 Riverside Court, Lucan, Co. Dublin',eircode:'K78 P9N1',mprn:'10022345671',renewId:'REN-0002',ardenId:'ARD-44513',status:'Switch Confirmed',flux:{id:'FLX-00452',date:'2026-04-05',conn:'Offline',lastData:'26 hours ago'},leaf:null,emailSent:false,billingStart:null,tariff:'RENEW Dynamic v1',supplyStart:null,created:'2026-03-20',updated:'1 day ago',
+   assets:{solar:false,battery:false,ev:false,evCharger:false,heatPump:true},
+   auditLog:[{time:'2026-04-01 09:00',actor:'System',action:'Status changed: Eligible — Proceeding to Switch → Switch Confirmed'},{time:'2026-03-20 11:00',actor:'Admin',action:'Account created'}],
+   consents:[{type:'Privacy Policy',status:'Given',version:'v1.2',ts:'2026-03-20 11:05'},{type:'Terms & Conditions',status:'Given',version:'v2.0',ts:'2026-03-20 11:05'},{type:'Dynamic Pricing Risk',status:'Given',version:'v1.0',ts:'2026-03-20 11:06'},{type:'Data Usage',status:'Not Given',version:'v1.1',ts:'—'},{type:'Direct Debit Authorisation',status:'Given',version:'v1.0',ts:'2026-03-20 11:10'}],
+   notifs:[]},
+  {id:'HH-103',name:"Niamh O'Connor",email:'niamh.oconnor@example.com',phone:'+353 85 300 3303',address:'22 The Paddocks, Naas, Co. Kildare',eircode:'W91 D2E3',mprn:'10032345672',renewId:'REN-0003',ardenId:null,status:'Pending Arden Validation',flux:null,leaf:null,emailSent:false,billingStart:null,tariff:null,supplyStart:null,created:'2026-03-22',updated:'5 hours ago',
+   assets:{solar:false,battery:false,ev:false,evCharger:false,heatPump:false},
+   auditLog:[{time:'2026-03-22 09:00',actor:'Admin',action:'Account created'}],
+   consents:[{type:'Privacy Policy',status:'Given',version:'v1.2',ts:'2026-03-22 09:05'},{type:'Terms & Conditions',status:'Given',version:'v2.0',ts:'2026-03-22 09:05'},{type:'Dynamic Pricing Risk',status:'Not Given',version:'—',ts:'—'},{type:'Data Usage',status:'Not Given',version:'—',ts:'—'},{type:'Direct Debit Authorisation',status:'Not Given',version:'—',ts:'—'}],
+   notifs:[]},
+  {id:'HH-104',name:'Ciarán Murphy',email:'ciaran.murphy@example.com',phone:'+353 83 400 4404',address:'5 Oak Lane, Celbridge, Co. Kildare',eircode:'W23 TK52',mprn:'10042345673',renewId:'REN-0004',ardenId:null,status:'Eligibility Failed',flux:null,leaf:null,emailSent:false,billingStart:null,tariff:null,supplyStart:null,created:'2026-03-24',updated:'3 days ago',
+   assets:{solar:false,battery:false,ev:false,evCharger:false,heatPump:false},
+   auditLog:[{time:'2026-03-26 10:30',actor:'System',action:'Eligibility Failed — reason: NO_SMART_METER'},{time:'2026-03-24 14:00',actor:'Admin',action:'Account created'}],
+   consents:[{type:'Privacy Policy',status:'Given',version:'v1.2',ts:'2026-03-24 14:05'}],
+   notifs:[{type:'Eligibility Fail Notice',channel:'Email',sent:'2026-03-26 10:31',status:'Delivered'}]},
 ];
+let nextHH = 105;
+
 let siteLogs = [
-  {household:"HH-101", result:"PASS", socket:"Hallway socket, 2m from fuse board", notes:""},
-  {household:"HH-102", result:"PASS", socket:"Utility room socket", notes:"Tight access to consumer unit, used right-angle clip"},
+  {household:'HH-101',visitDate:'2026-03-28',result:'PASS',installer:'Tomás Reilly',socket:'Hallway socket, 2m from fuse board',fluxStatus:'Installed',leafStatus:'Installed',notes:''},
+  {household:'HH-102',visitDate:'2026-03-30',result:'PASS',installer:'Tomás Reilly',socket:'Utility room socket',fluxStatus:'Installed',leafStatus:'Pending',notes:'Tight access to consumer unit'},
 ];
-let nextHHNumber = 104;
 
-/* ---------------- Helpers ---------------- */
-function toast(msg){
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.style.display = 'block';
-  clearTimeout(window._toastTimer);
-  window._toastTimer = setTimeout(()=>{ t.style.display='none'; }, 3200);
-}
-function ledFor(h){
-  if(h.status === 'active') return 'green';
-  if(h.flux || h.leaf) return 'amber';
-  return 'slate';
-}
-function deviceSummary(h){
-  const f = h.flux ? '<span class="led green"></span>Flux' : '<span class="led slate"></span>Flux';
-  const l = h.leaf ? '<span class="led green"></span>Leaf' : '<span class="led slate"></span>Leaf';
-  return f + '&nbsp;&nbsp;' + l;
+let adminUsers = [
+  {name:'Swarit Gaur',email:'swarit@renew.ie',role:'Super Admin',status:'Active',invited:'2026-01-10',lastLogin:'Today'},
+  {name:'David Kelly',email:'david@renew.ie',role:'Admin',status:'Active',invited:'2026-01-12',lastLogin:'Yesterday'},
+  {name:'Emma Byrne',email:'emma@renew.ie',role:'Customer Care',status:'Active',invited:'2026-02-01',lastLogin:'2026-06-15'},
+  {name:'Tomás Reilly',email:'tomas@renew.ie',role:'Operations',status:'Active',invited:'2026-02-15',lastLogin:'2026-06-14'},
+  {name:'Ruth Ahern',email:'ruth@renew.ie',role:'Customer Care',status:'Invited',invited:'2026-06-16',lastLogin:'Never'},
+];
+
+let tariffLog = [
+  {time:'2026-05-01 09:00',admin:'Swarit Gaur',field:'Green Threshold',prev:'8c/kWh',newVal:'10c/kWh'},
+  {time:'2026-04-15 14:22',admin:'Swarit Gaur',field:'Base Unit Rate',prev:'17.5c',newVal:'18.5c'},
+];
+
+let emailLogs = [
+  {received:'2026-06-10 08:14',subject:'Switch Confirmation — MPRN 10022345671',mprn:'10022345671',matched:'HH-102 — Padraig Walsh',outcome:'Success',statusApplied:'Switch Confirmed'},
+  {received:'2026-06-08 09:30',subject:'Eligibility Assessment — MPRN 10042345673',mprn:'10042345673',matched:'HH-104 — Ciarán Murphy',outcome:'Success',statusApplied:'Eligibility Failed'},
+  {received:'2026-06-12 11:55',subject:'Arden Assessment — MPRN 99999999',mprn:'99999999',matched:'—',outcome:'Manual Review Required',statusApplied:'None'},
+];
+
+let notifications = [
+  {household:'HH-101',type:'Welcome Email',channel:'Email',sent:'2026-04-02 11:00',status:'Delivered'},
+  {household:'HH-101',type:'Price Alert — Cheap',channel:'Push',sent:'2026-04-10 02:15',status:'Delivered'},
+  {household:'HH-104',type:'Eligibility Fail Notice',channel:'Email',sent:'2026-03-26 10:31',status:'Delivered'},
+];
+
+/* ===========================
+   ROLE LOGIC
+=========================== */
+const rolePerms = {
+  superadmin:{customers:true,devices:true,sitelog:true,notifications:true,emaillog:true,export:true,tariff:true,adminusers:true,editAccounts:true,linkDevices:true,manualStatus:true},
+  admin:{customers:true,devices:true,sitelog:true,notifications:true,emaillog:true,export:true,tariff:false,adminusers:false,editAccounts:true,linkDevices:true,manualStatus:true},
+  customercare:{customers:true,devices:false,sitelog:true,notifications:true,emaillog:false,export:false,tariff:false,adminusers:false,editAccounts:false,linkDevices:false,manualStatus:false},
+  operations:{customers:false,devices:true,sitelog:true,notifications:false,emaillog:false,export:false,tariff:false,adminusers:false,editAccounts:false,linkDevices:true,manualStatus:false},
+};
+function can(perm){ return rolePerms[currentRole][perm]; }
+
+function changeRole(role){
+  currentRole = role;
+  const labels = {superadmin:'Super Admin',admin:'Admin',customercare:'Customer Care',operations:'Operations'};
+  document.getElementById('roleLabel').textContent = labels[role];
+  // Show/hide super admin nav
+  document.getElementById('superAdminNav').style.display = (role==='superadmin') ? '' : 'none';
+  // Lock nav items
+  document.querySelectorAll('.nav-item[data-panel]').forEach(item=>{
+    const p = item.dataset.panel;
+    const permMap = {customers:'customers',devices:'devices',sitelog:'sitelog',notifications:'notifications',emaillog:'emaillog',export:'export',tariff:'tariff',adminusers:'adminusers',onboarding:'customers',overview:true};
+    const allowed = permMap[p]===true || can(permMap[p]||p);
+    item.classList.toggle('locked', !allowed);
+  });
+  // Switch to overview if current panel is now locked
+  renderAll();
+  toast(`Viewing as: ${labels[role]}`);
 }
 
-/* ---------------- Navigation ---------------- */
-document.querySelectorAll('.nav-item').forEach(item=>{
-  item.addEventListener('click', ()=>{
-    document.querySelectorAll('.nav-item').forEach(i=>i.classList.remove('active'));
-    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
-    item.classList.add('active');
-    document.getElementById('panel-'+item.dataset.panel).classList.add('active');
-    if(item.dataset.panel === 'households') renderHouseholdsTable();
+/* ===========================
+   NAVIGATION
+=========================== */
+document.querySelectorAll('.nav-item[data-panel]').forEach(item=>{
+  item.addEventListener('click',()=>{
+    if(item.classList.contains('locked')) return;
+    switchPanel(item.dataset.panel);
   });
 });
-
-/* ---------------- Renderers ---------------- */
-function renderStats(){
-  const total = households.length;
-  const pending = households.filter(h=>h.status==='pending activation').length;
-  const active = households.filter(h=>h.status==='active').length;
-  const onlineDevices = households.reduce((n,h)=> n + (h.flux?1:0) + (h.leaf?1:0), 0);
-  const row = document.getElementById('statRow');
-  row.innerHTML = `
-    <div class="stat-card"><div class="stat-num">${total}</div><div class="stat-label"><span class="led slate"></span>Total households</div></div>
-    <div class="stat-card"><div class="stat-num">${pending}</div><div class="stat-label"><span class="led amber"></span>Pending activation</div></div>
-    <div class="stat-card"><div class="stat-num">${active}</div><div class="stat-label"><span class="led green"></span>Active</div></div>
-    <div class="stat-card"><div class="stat-num">${onlineDevices}</div><div class="stat-label"><span class="led green"></span>Devices linked</div></div>
-  `;
+function switchPanel(name){
+  document.querySelectorAll('.nav-item[data-panel]').forEach(i=>i.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  const navItem = document.querySelector(`.nav-item[data-panel="${name}"]`);
+  if(navItem) navItem.classList.add('active');
+  document.getElementById('panel-'+name).classList.add('active');
+  if(name==='customers') renderCustomerList();
+  if(name==='onboarding') renderPipeline();
+  if(name==='devices') { renderDevicesTable(); renderDeviceStats(); }
+  if(name==='sitelog') refreshHHSelects();
+  if(name==='notifications') { renderNotifTable(); refreshEmailHHSelects(); }
+  if(name==='emaillog') renderEmailLog();
+  if(name==='export') renderFleetHealth();
+  if(name==='tariff') renderTariffAccess();
+  if(name==='adminusers') renderAdminUsersAccess();
 }
 
-function renderRecent(){
-  const body = document.getElementById('recentTable');
-  body.innerHTML = households.slice(0,5).map(h=>`
-    <tr onclick="goToHousehold('${h.id}')">
+/* ===========================
+   HELPERS
+=========================== */
+function toast(msg){
+  const t=document.getElementById('toast');t.textContent=msg;t.style.display='block';
+  clearTimeout(window._tt);window._tt=setTimeout(()=>{t.style.display='none';},3000);
+}
+function statusPill(s){
+  const cls=s==='Active'?'active':s.includes('Failed')||s==='Suspended'||s==='Closed'?'failed':s==='Never Connected'||s==='Offline'?'offline':s==='Invited'?'invited':'pending';
+  return `<span class="pill ${cls}">${s}</span>`;
+}
+function devSummary(h){
+  return (h.flux?`<span class="led g"></span>FLUX`:`<span class="led s"></span>FLUX`)+'&nbsp; '+(h.leaf?`<span class="led g"></span>LEAF`:`<span class="led s"></span>LEAF`);
+}
+
+/* ===========================
+   OVERVIEW
+=========================== */
+function renderStats(){
+  const total=customers.length;
+  const active=customers.filter(h=>h.status==='Active').length;
+  const pending=customers.filter(h=>!['Active','Eligibility Failed','Suspended','Closed'].includes(h.status)).length;
+  const devOnline=customers.reduce((n,h)=>(h.flux&&h.flux.conn==='Online'?n+1:n)+(h.leaf&&h.leaf.conn==='Online'?n+1:n),0);
+  const offlineAlert=customers.filter(h=>(h.flux&&h.flux.conn==='Offline')||(h.leaf&&h.leaf.conn==='Offline')).length;
+  document.getElementById('statRow').innerHTML=`
+    <div class="stat-card"><div class="stat-num">${total}</div><div class="stat-label">Total accounts</div></div>
+    <div class="stat-card"><div class="stat-num">${active}</div><div class="stat-label" style="color:var(--green)">Active customers</div></div>
+    <div class="stat-card"><div class="stat-num">${pending}</div><div class="stat-label">In onboarding</div></div>
+    <div class="stat-card ${offlineAlert?'warn':''}"><div class="stat-num">${devOnline}</div><div class="stat-label">Devices online${offlineAlert?`<br><span style="color:var(--amber);font-size:11px;">⚠ ${offlineAlert} device(s) offline</span>`:''}</div></div>`;
+  document.getElementById('recentTable').innerHTML=customers.slice(0,5).map(h=>`
+    <tr class="clickable" onclick="goToCustomer('${h.id}')">
       <td>${h.name} <span class="mono">${h.id}</span></td>
-      <td><span class="pill ${h.status==='active'?'active':'pending'}">${h.status}</span></td>
-      <td>${h.flux ? '<span class="led green"></span>'+h.flux.id : '<span class="led slate"></span>—'}</td>
-      <td>${h.leaf ? '<span class="led green"></span>'+h.leaf.id : '<span class="led slate"></span>—'}</td>
+      <td>${statusPill(h.status)}</td>
+      <td>${h.flux?`<span class="led ${h.flux.conn==='Online'?'g':'r'}"></span>${h.flux.id}`:'<span class="led s"></span>—'}</td>
+      <td>${h.leaf?`<span class="led ${h.leaf.conn==='Online'?'g':'r'}"></span>${h.leaf.id}`:'<span class="led s"></span>—'}</td>
       <td class="mono">${h.updated}</td>
     </tr>`).join('');
+  const offline=customers.filter(h=>(h.flux&&h.flux.conn==='Offline')||(h.leaf&&h.leaf.conn==='Offline'));
+  document.getElementById('offlineAlerts').innerHTML=offline.length?offline.map(h=>`
+    <div style="padding:10px 0;border-bottom:1px solid var(--border);font-size:13px;">
+      <strong>${h.name}</strong> <span class="mono">${h.id}</span> —
+      ${h.flux&&h.flux.conn==='Offline'?`<span class="led r"></span>FLUX offline (last data: ${h.flux.lastData})`:''}
+      ${h.leaf&&h.leaf.conn==='Offline'?`<span class="led r"></span>LEAF offline`:''}
+    </div>`).join(''):'<div class="empty">No offline alerts.</div>';
+  document.getElementById('ardenAlert').style.display=emailLogs.some(e=>e.outcome==='Manual Review Required')?'':'none';
 }
 
-function renderHouseholdsTable(){
-  const body = document.getElementById('householdsTable');
-  body.innerHTML = households.map(h=>`
-    <tr onclick="showDetail('${h.id}')">
-      <td class="mono">${h.id}</td>
-      <td>${h.name}</td>
-      <td class="mono">${h.eircode}</td>
-      <td class="mono">${h.mprn}</td>
-      <td><span class="pill ${h.status==='active'?'active':'pending'}">${h.status}</span></td>
-      <td>${deviceSummary(h)}</td>
-    </tr>`).join('');
+/* ===========================
+   CUSTOMERS
+=========================== */
+function renderCustomerList(){
+  const search=(document.getElementById('custSearch').value||'').toLowerCase();
+  const sf=document.getElementById('custStatusFilter').value;
+  const df=document.getElementById('custDeviceFilter').value;
+  let list=customers.filter(h=>{
+    const matchSearch=!search||h.name.toLowerCase().includes(search)||h.email.toLowerCase().includes(search)||h.mprn.includes(search);
+    const matchStatus=!sf||h.status===sf;
+    const matchDev=!df||(df==='both'&&h.flux&&h.leaf)||(df==='partial'&&(h.flux||h.leaf)&&!(h.flux&&h.leaf))||(df==='none'&&!h.flux&&!h.leaf);
+    return matchSearch&&matchStatus&&matchDev;
+  });
+  document.getElementById('custCount').textContent=`${list.length} of ${customers.length} accounts`;
+  document.getElementById('customerTable').innerHTML=list.map(h=>`
+    <tr class="clickable" onclick="showCustomerDetail('${h.id}')">
+      <td class="mono">${h.id}</td><td>${h.name}</td>
+      <td class="mono">${h.email}</td><td class="mono">${h.mprn}</td>
+      <td>${statusPill(h.status)}</td><td>${devSummary(h)}</td>
+      <td class="mono">${h.created}</td>
+    </tr>`).join('')||'<tr><td colspan="7" class="empty">No accounts match filters.</td></tr>';
 }
 
-function goToHousehold(id){
-  document.querySelector('.nav-item[data-panel="households"]').click();
-  showDetail(id);
+let currentCustomerId=null;
+let currentCustTab='profile';
+function showCustomerDetail(id){
+  currentCustomerId=id;currentCustTab='profile';
+  document.getElementById('customerListView').style.display='none';
+  document.getElementById('createAccountPanel').style.display='none';
+  document.getElementById('customerDetailView').style.display='';
+  renderCustomerDetail();
+}
+function closeCustomerDetail(){
+  document.getElementById('customerDetailView').style.display='none';
+  document.getElementById('customerListView').style.display='';
+  renderCustomerList();
+}
+function goToCustomer(id){ switchPanel('customers'); showCustomerDetail(id); }
+
+function renderCustomerDetail(){
+  const h=customers.find(x=>x.id===currentCustomerId);
+  document.getElementById('custDetailHeader').innerHTML=`
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+      <div><div style="font-size:18px;font-weight:600;color:var(--navy);">${h.name}</div>
+      <div class="mono" style="margin-top:3px;">${h.id} · ${h.renewId}${h.ardenId?' · '+h.ardenId:''}</div></div>
+      <div style="display:flex;gap:8px;align-items:center;">${statusPill(h.status)}${can('editAccounts')?`<button class="btn sm secondary" onclick="editCustomer('${h.id}')">Edit</button>`:''}${can('editAccounts')?`<button class="btn sm secondary" onclick="suspendCustomer('${h.id}')">${h.status==='Suspended'?'Reactivate':'Suspend'}</button>`:''}</div>
+    </div>`;
+  document.querySelectorAll('[data-ctab]').forEach(t=>{
+    t.classList.toggle('active',t.dataset.ctab===currentCustTab);
+    t.onclick=()=>{currentCustTab=t.dataset.ctab;renderCustTabContent();};
+  });
+  renderCustTabContent();
 }
 
-function showDetail(id){
-  const h = households.find(x=>x.id===id);
-  const block = document.getElementById('detailBlock');
-  block.style.display = 'block';
-  block.innerHTML = `
-    <h2>${h.name} <span class="mono" style="color:var(--text-faint);font-size:12px;">${h.id}</span></h2>
-    <p class="desc">Full account and installation detail.</p>
-    <div class="detail-grid">
-      <div><b>Email</b>${h.email}</div>
-      <div><b>Phone</b>${h.phone}</div>
-      <div><b>Address</b>${h.address}</div>
-      <div><b>Eircode</b><span class="mono">${h.eircode}</span></div>
-      <div><b>MPRN</b><span class="mono">${h.mprn}</span></div>
-      <div><b>Status</b><span class="pill ${h.status==='active'?'active':'pending'}">${h.status}</span></div>
-    </div>
-    <div class="device-row"><span><span class="led ${h.flux?'green':'slate'}"></span>Flux</span><span class="mono">${h.flux ? h.flux.id+' · installed '+h.flux.date : 'not linked'}</span></div>
-    <div class="device-row"><span><span class="led ${h.leaf?'green':'slate'}"></span>Leaf</span><span class="mono">${h.leaf ? h.leaf.id+' · '+h.leaf.ssid : 'not linked'}</span></div>
-    <div class="device-row"><span>Welcome email</span><span class="mono">${h.emailSent ? 'sent' : 'not sent'}</span></div>
-    <div class="actions-row">
-      <button class="btn secondary" onclick="closeDetail()">Close</button>
-    </div>
-  `;
+function renderCustTabContent(){
+  const h=customers.find(x=>x.id===currentCustomerId);
+  const el=document.getElementById('custTabContent');
+  if(currentCustTab==='profile'){
+    el.innerHTML=`
+      <div class="detail-grid">
+        <div class="dfield"><b>Email</b>${h.email}</div>
+        <div class="dfield"><b>Phone</b>${h.phone}</div>
+        <div class="dfield"><b>Address</b>${h.address}</div>
+        <div class="dfield"><b>Eircode</b><span class="mono">${h.eircode}</span></div>
+        <div class="dfield"><b>MPRN</b><span class="mono">${h.mprn}</span></div>
+        <div class="dfield"><b>RENEW Customer ID</b><span class="mono">${h.renewId}</span></div>
+        <div class="dfield"><b>Arden Account Number</b><span class="mono">${h.ardenId||'—'}</span></div>
+        <div class="dfield"><b>Tariff</b>${h.tariff||'—'}</div>
+        <div class="dfield"><b>Supply Start Date</b>${h.supplyStart||'—'}</div>
+        <div class="dfield"><b>Billing Cycle Start</b>${h.billingStart||'Not configured'}</div>
+        <div class="dfield"><b>Account Created</b>${h.created}</div>
+        <div class="dfield"><b>Onboarding Status</b>${statusPill(h.status)}</div>
+      </div>
+      ${can('manualStatus')?`
+      <div style="border-top:1px solid var(--border);padding-top:14px;margin-top:4px;">
+        <label style="font-size:12px;color:var(--text-dim);font-weight:500;">Update Onboarding Status</label>
+        <div style="display:flex;gap:10px;margin-top:8px;flex-wrap:wrap;">
+          <select id="statusDropdown" style="background:var(--bg);border:1px solid var(--border);border-radius:4px;padding:8px 10px;font-size:13px;outline:none;">
+            ${['Pending Arden Validation','Eligibility Failed','Awaiting Smart Meter Upgrade','Eligible — Proceeding to Switch','Switch Rejected','Switch Confirmed','Active','Suspended','Closed'].map(s=>`<option ${h.status===s?'selected':''}>${s}</option>`).join('')}
+          </select>
+          <button class="btn sm" onclick="updateStatus('${h.id}')">Update Status</button>
+        </div>
+      </div>`:''}
+      <div style="border-top:1px solid var(--border);padding-top:14px;margin-top:14px;">
+        <div style="font-size:12px;font-weight:600;color:var(--navy);margin-bottom:10px;">Declared Household Assets</div>
+        <div style="display:flex;gap:16px;flex-wrap:wrap;font-size:13px;">
+          ${[['Solar PV',h.assets.solar],['Battery',h.assets.battery],['EV',h.assets.ev],['EV Charger',h.assets.evCharger],['Heat Pump',h.assets.heatPump]].map(([l,v])=>`<span><span class="led ${v?'g':'s'}"></span>${l}</span>`).join('')}
+        </div>
+      </div>`;
+  } else if(currentCustTab==='devices'){
+    const f=h.flux,l=h.leaf;
+    el.innerHTML=`
+      ${f?`<div class="dev-row"><div><strong>FLUX</strong> <span class="mono">${f.id}</span><div class="mono" style="margin-top:3px;">Installed ${f.date} · ${f.conn} · Last data: ${f.lastData}</div></div><div style="display:flex;gap:8px;">${statusPill(f.conn)}${can('linkDevices')?`<button class="btn sm danger" onclick="unlinkDevice('${h.id}','flux')">Unlink</button>`:''}</div></div>`:'<div class="empty" style="border:1px dashed var(--border);border-radius:4px;margin-bottom:10px;">No FLUX device linked.</div>'}
+      ${l?`<div class="dev-row"><div><strong>LEAF</strong> <span class="mono">${l.id}</span><div class="mono" style="margin-top:3px;">Installed ${l.date} · SSID: ${l.ssid} · ${l.conn}</div></div><div style="display:flex;gap:8px;">${statusPill(l.conn)}${can('linkDevices')?`<button class="btn sm danger" onclick="unlinkDevice('${h.id}','leaf')">Unlink</button>`:''}</div></div>`:'<div class="empty" style="border:1px dashed var(--border);border-radius:4px;">No LEAF device linked.</div>'}
+      ${can('linkDevices')&&(!f||!l)?`<div style="margin-top:14px;"><button class="btn sm" onclick="switchPanel('devices')">Link Device →</button></div>`:''}`;
+  } else if(currentCustTab==='consents'){
+    el.innerHTML=h.consents.map(c=>`
+      <div class="consent-row">
+        <div><strong>${c.type}</strong><div class="mono">${c.version}</div></div>
+        <div style="text-align:right;">${statusPill(c.status==='Given'?'active':'failed')} <div class="mono" style="margin-top:3px;">${c.ts}</div></div>
+      </div>`).join('');
+  } else if(currentCustTab==='auditlog'){
+    el.innerHTML=`<div style="margin-bottom:10px;text-align:right;"><button class="btn sm secondary" onclick="exportAuditLog('${h.id}')">Export CSV</button></div>`+
+      h.auditLog.map(e=>`<div class="audit-row"><div class="audit-time">${e.time}</div><div class="audit-actor">${e.actor}</div><div class="audit-action">${e.action}</div></div>`).join('');
+  } else if(currentCustTab==='comms'){
+    el.innerHTML=h.notifs.length?h.notifs.map(n=>`
+      <div class="audit-row"><div class="audit-time">${n.sent}</div><div class="audit-actor">${n.type}</div><div class="audit-action">${n.channel} · ${statusPill(n.status==='Delivered'?'active':'failed')}</div></div>`).join(''):'<div class="empty">No notifications sent to this customer.</div>';
+  }
 }
-function closeDetail(){ document.getElementById('detailBlock').style.display='none'; }
 
-function refreshHouseholdSelects(){
-  const pendingOnly = households.filter(h=>h.status!=='active' || true); // all households selectable for linking edits
-  const opts = households.map(h=>`<option value="${h.id}">${h.id} — ${h.name}</option>`).join('');
-  document.getElementById('householdSelect').innerHTML = opts;
-  document.getElementById('householdSelectLog').innerHTML = opts;
-
-  const readyForEmail = households.filter(h=>h.flux && h.leaf);
-  document.getElementById('emailHouseholdSelect').innerHTML = readyForEmail.length
-    ? readyForEmail.map(h=>`<option value="${h.id}">${h.id} — ${h.name} ${h.emailSent ? '(already sent)' : ''}</option>`).join('')
-    : `<option value="">No households ready — link both devices first</option>`;
+function showCreateAccount(){
+  document.getElementById('customerListView').style.display='none';
+  document.getElementById('customerDetailView').style.display='none';
+  document.getElementById('createAccountPanel').style.display='';
+}
+function hideCreateAccount(){
+  document.getElementById('createAccountPanel').style.display='none';
+  document.getElementById('customerListView').style.display='';
 }
 
-function renderSiteLogTable(){
-  const body = document.getElementById('siteLogTable');
-  if(siteLogs.length === 0){ body.innerHTML = `<tr><td colspan="4" class="empty">No site log entries yet.</td></tr>`; return; }
-  body.innerHTML = siteLogs.slice().reverse().map(l=>{
-    const h = households.find(x=>x.id===l.household);
-    return `<tr>
-      <td>${h ? h.name : l.household} <span class="mono">${l.household}</span></td>
-      <td><span class="pill ${l.result==='PASS'?'active':'pending'}">${l.result}</span></td>
-      <td>${l.socket || '—'}</td>
-      <td>${l.notes || '—'}</td>
-    </tr>`;
+document.getElementById('newAccountForm').addEventListener('submit',e=>{
+  e.preventDefault();
+  const f=new FormData(e.target);
+  const newId='HH-'+(nextHH++);
+  const renewId='REN-'+String(customers.length+1).padStart(4,'0');
+  // Check duplicate
+  if(customers.find(h=>h.mprn===f.get('mprn'))){toast('⚠ An account with this MPRN already exists.');return;}
+  if(customers.find(h=>h.email===f.get('email'))){toast('⚠ An account with this email already exists.');return;}
+  const now=new Date().toISOString().slice(0,10);
+  customers.unshift({id:newId,name:f.get('name'),email:f.get('email'),phone:f.get('phone'),address:f.get('address'),eircode:f.get('eircode'),mprn:f.get('mprn'),renewId,ardenId:null,status:'Pending Arden Validation',flux:null,leaf:null,emailSent:false,billingStart:f.get('billingStart')||null,tariff:null,supplyStart:null,created:now,updated:'just now',assets:{solar:false,battery:false,ev:false,evCharger:false,heatPump:false},auditLog:[{time:new Date().toISOString().replace('T',' ').slice(0,16),actor:'Admin',action:'Account created'}],consents:[],notifs:[]});
+  toast(`✓ Account ${newId} created — Pending Arden Validation`);
+  e.target.reset();hideCreateAccount();renderCustomerList();renderStats();refreshHHSelects();
+});
+
+function updateStatus(id){
+  const h=customers.find(x=>x.id===id);
+  const s=document.getElementById('statusDropdown').value;
+  const old=h.status;h.status=s;
+  h.auditLog.unshift({time:new Date().toISOString().replace('T',' ').slice(0,16),actor:'Admin',action:`Status changed: ${old} → ${s}`});
+  h.updated='just now';
+  toast(`✓ ${id} status updated to "${s}"`);
+  renderCustomerDetail();renderStats();
+}
+
+function suspendCustomer(id){
+  const h=customers.find(x=>x.id===id);
+  const wasSuspended=h.status==='Suspended';
+  h.status=wasSuspended?'Active':'Suspended';
+  h.auditLog.unshift({time:new Date().toISOString().replace('T',' ').slice(0,16),actor:'Admin',action:wasSuspended?'Account reactivated':'Account suspended'});
+  toast(`✓ ${id} ${wasSuspended?'reactivated':'suspended'}`);
+  renderCustomerDetail();
+}
+
+function editCustomer(id){ toast('Edit form — in a full build this opens an inline edit form for all fields with save/cancel.'); }
+function unlinkDevice(id,type){
+  const h=customers.find(x=>x.id===id);
+  const serial=h[type]?.id;
+  h[type]=null;
+  h.auditLog.unshift({time:new Date().toISOString().replace('T',' ').slice(0,16),actor:'Admin',action:`Device ${serial} unlinked`});
+  toast(`✓ ${serial} unlinked from ${id}`);
+  renderCustomerDetail();renderDevicesTable();renderDeviceStats();
+}
+function exportAuditLog(id){
+  const h=customers.find(x=>x.id===id);
+  const csv='Timestamp,Actor,Action\n'+h.auditLog.map(e=>`"${e.time}","${e.actor}","${e.action}"`).join('\n');
+  dlCSV(csv,`audit_${id}.csv`);
+}
+
+/* ===========================
+   ONBOARDING PIPELINE
+=========================== */
+const pipelineStatuses=['Pending Arden Validation','Eligibility Failed','Awaiting Smart Meter Upgrade','Eligible — Proceeding to Switch','Switch Rejected','Switch Confirmed','Active'];
+function renderPipeline(){
+  document.getElementById('ardenAlert').style.display=emailLogs.some(e=>e.outcome==='Manual Review Required')?'':'none';
+  const el=document.getElementById('pipelineGroups');
+  el.innerHTML=pipelineStatuses.map(s=>{
+    const group=customers.filter(h=>h.status===s);
+    return `<div class="pipe-group">
+      <div class="pipe-head" onclick="this.nextElementSibling.classList.toggle('collapsed')">
+        <h3>${s}</h3><span class="pipe-count">${group.length}</span>
+      </div>
+      <div class="pipe-body ${group.length===0?'collapsed':''}">
+        ${group.length?`<table><thead><tr><th>ID</th><th>Name</th><th>MPRN</th><th>Devices</th><th>Updated</th>${can('manualStatus')?'<th>Action</th>':''}</tr></thead>
+        <tbody>${group.map(h=>`<tr class="clickable" onclick="goToCustomer('${h.id}')">
+          <td class="mono">${h.id}</td><td>${h.name}</td><td class="mono">${h.mprn}</td>
+          <td>${devSummary(h)}</td><td class="mono">${h.updated}</td>
+          ${can('manualStatus')?`<td><button class="btn sm secondary" onclick="event.stopPropagation();quickStatusUpdate('${h.id}')">Update</button></td>`:''}
+        </tr>`).join('')}</tbody></table>`:'<div class="empty">No customers at this stage.</div>'}
+      </div>
+    </div>`;
   }).join('');
 }
+function quickStatusUpdate(id){ goToCustomer(id); setTimeout(()=>{currentCustTab='profile';renderCustTabContent();},100); }
 
-/* ---------------- Form handlers ---------------- */
-document.getElementById('newAccountForm').addEventListener('submit', e=>{
-  e.preventDefault();
-  const f = new FormData(e.target);
-  const id = 'HH-' + (nextHHNumber++);
-  households.unshift({
-    id, name:f.get('name'), email:f.get('email'), phone:f.get('phone'),
-    address:f.get('address'), eircode:f.get('eircode'), mprn:f.get('mprn'),
-    status:'pending activation', flux:null, leaf:null, emailSent:false, updated:'just now'
+/* ===========================
+   DEVICES
+=========================== */
+function allDevices(){
+  const devs=[];
+  customers.forEach(h=>{
+    if(h.flux) devs.push({serial:h.flux.id,type:'FLUX',customer:h.name,custId:h.id,installed:h.flux.date,conn:h.flux.conn,lastData:h.flux.lastData});
+    if(h.leaf) devs.push({serial:h.leaf.id,type:'LEAF',customer:h.name,custId:h.id,installed:h.leaf.date,conn:h.leaf.conn,lastData:h.leaf.lastData});
   });
-  toast(`Account created — ${id} (pending activation)`);
-  e.target.reset();
-  renderStats(); renderRecent(); refreshHouseholdSelects();
-});
+  return devs;
+}
+function renderDeviceStats(){
+  const devs=allDevices();
+  const online=devs.filter(d=>d.conn==='Online').length;
+  const offline=devs.filter(d=>d.conn==='Offline').length;
+  document.getElementById('deviceStatRow').innerHTML=`
+    <div class="stat-card"><div class="stat-num">${devs.length}</div><div class="stat-label">Total devices</div></div>
+    <div class="stat-card"><div class="stat-num">${online}</div><div class="stat-label" style="color:var(--green)">Online</div></div>
+    <div class="stat-card ${offline?'warn':''}"><div class="stat-num">${offline}</div><div class="stat-label" style="${offline?'color:var(--red)':''}">Offline</div></div>
+    <div class="stat-card"><div class="stat-num">${Math.round(online/devs.length*100)||0}%</div><div class="stat-label">Fleet online rate</div></div>`;
+}
+function renderDevicesTable(){
+  const tf=document.getElementById('devTypeFilter').value;
+  const sf=document.getElementById('devStatusFilter').value;
+  let devs=allDevices().filter(d=>(!tf||d.type===tf)&&(!sf||d.conn===sf));
+  document.getElementById('devCount').textContent=`${devs.length} device(s)`;
+  document.getElementById('devicesTable').innerHTML=devs.map(d=>`
+    <tr class="${d.conn==='Offline'?'clickable':''}" onclick="goToCustomer('${d.custId}')">
+      <td class="mono">${d.serial}</td><td>${d.type}</td>
+      <td>${d.customer} <span class="mono">${d.custId}</span></td>
+      <td class="mono">${d.installed}</td><td>${statusPill(d.conn)}</td>
+      <td class="mono">${d.lastData||'—'}</td>
+      <td>${can('linkDevices')?`<button class="btn sm secondary" onclick="event.stopPropagation();goToCustomer('${d.custId}')">View</button>`:''}</td>
+    </tr>`).join('')||'<tr><td colspan="7" class="empty">No devices match filters.</td></tr>';
+  // Show/hide link form based on role
+  document.getElementById('linkDeviceRole').style.display=can('linkDevices')?'':'none';
+}
 
-document.getElementById('devicesForm').addEventListener('submit', e=>{
+document.getElementById('devicesForm').addEventListener('submit',e=>{
   e.preventDefault();
-  const f = new FormData(e.target);
-  const h = households.find(x=>x.id===f.get('household'));
+  const f=new FormData(e.target);
+  const h=customers.find(x=>x.id===f.get('household'));
   if(!h) return;
-  h.flux = {id:f.get('fluxId'), date:f.get('fluxDate')};
-  h.leaf = {id:f.get('leafId'), date:f.get('leafDate'), ssid:f.get('ssid')};
-  h.status = 'active';
-  h.updated = 'just now';
-  toast(`${h.id} — Flux and Leaf linked, status set to active`);
-  e.target.reset();
-  renderStats(); renderRecent(); refreshHouseholdSelects();
+  if(customers.find(c=>c.id!==h.id&&((c.flux&&c.flux.id===f.get('fluxId'))||(c.leaf&&c.leaf.id===f.get('fluxId'))))){toast('⚠ FLUX serial already linked to another account.');return;}
+  h.flux={id:f.get('fluxId'),date:f.get('fluxDate'),conn:'Online',lastData:'just now'};
+  h.leaf={id:f.get('leafId'),date:f.get('leafDate'),ssid:f.get('ssid'),conn:'Online',lastData:'just now'};
+  if(h.status==='Switch Confirmed') h.status='Active';
+  h.updated='just now';
+  h.auditLog.unshift({time:new Date().toISOString().replace('T',' ').slice(0,16),actor:'Admin',action:`Devices linked: ${f.get('fluxId')} & ${f.get('leafId')}`});
+  toast(`✓ Devices linked to ${h.id} — status set to Active`);
+  e.target.reset();renderDevicesTable();renderDeviceStats();renderStats();refreshHHSelects();
 });
 
-document.getElementById('siteLogForm').addEventListener('submit', e=>{
+/* ===========================
+   SITE LOG
+=========================== */
+function refreshHHSelects(){
+  const opts=customers.map(h=>`<option value="${h.id}">${h.id} — ${h.name}</option>`).join('');
+  ['householdSelect','householdSelectLog'].forEach(id=>{ const el=document.getElementById(id); if(el) el.innerHTML=opts; });
+}
+document.getElementById('siteLogForm').addEventListener('submit',e=>{
   e.preventDefault();
-  const f = new FormData(e.target);
-  siteLogs.push({household:f.get('household'), result:f.get('result'), socket:f.get('socket'), notes:f.get('notes')});
-  toast(`Site log saved for ${f.get('household')}`);
-  e.target.reset();
-  renderSiteLogTable();
+  const f=new FormData(e.target);
+  siteLogs.unshift({household:f.get('household'),visitDate:f.get('visitDate'),result:f.get('result'),installer:f.get('installer'),socket:f.get('socket'),fluxStatus:f.get('fluxStatus'),leafStatus:f.get('leafStatus'),notes:f.get('notes')});
+  const h=customers.find(x=>x.id===f.get('household'));
+  if(h&&f.get('result')==='FAIL'){
+    h.auditLog.unshift({time:new Date().toISOString().replace('T',' ').slice(0,16),actor:'Admin',action:`Site visit FAIL logged — reschedule required`});
+  }
+  toast(`✓ Site log saved for ${f.get('household')}`);
+  e.target.reset();renderSiteLog();
+});
+function renderSiteLog(){
+  document.getElementById('siteLogTable').innerHTML=siteLogs.map(l=>{
+    const h=customers.find(x=>x.id===l.household);
+    return `<tr><td>${h?h.name:l.household} <span class="mono">${l.household}</span></td>
+      <td class="mono">${l.visitDate}</td>
+      <td><span class="pill ${l.result==='PASS'?'active':'failed'}">${l.result}</span></td>
+      <td>${l.installer||'—'}</td><td>${l.fluxStatus}</td><td>${l.leafStatus}</td><td>${l.notes||'—'}</td></tr>`;
+  }).join('')||'<tr><td colspan="7" class="empty">No site log entries yet.</td></tr>';
+}
+
+/* ===========================
+   NOTIFICATIONS
+=========================== */
+function refreshEmailHHSelects(){
+  const opts=customers.map(h=>`<option value="${h.id}">${h.id} — ${h.name}</option>`).join('');
+  ['commHouseholdSelect'].forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML=opts;});
+  const ready=customers.filter(h=>h.flux&&h.leaf);
+  document.getElementById('emailHouseholdSelect').innerHTML=ready.length
+    ?ready.map(h=>`<option value="${h.id}">${h.id} — ${h.name}${h.emailSent?' (sent)':''}</option>`).join('')
+    :'<option value="">No customers with both devices linked</option>';
+}
+document.getElementById('manualCommForm').addEventListener('submit',e=>{
+  e.preventDefault();
+  const f=new FormData(e.target);
+  const h=customers.find(x=>x.id===f.get('household'));
+  const now=new Date().toISOString().replace('T',' ').slice(0,16);
+  const entry={type:f.get('type'),channel:f.get('channel'),sent:now,status:'Delivered'};
+  if(h) h.notifs.unshift(entry);
+  notifications.unshift({household:f.get('household'),type:f.get('type'),channel:f.get('channel'),sent:now,status:'Delivered'});
+  toast(`✓ Message sent to ${h?h.name:f.get('household')}`);
+  e.target.reset();renderNotifTable();
+});
+function renderNotifTable(){
+  document.getElementById('notifTable').innerHTML=notifications.map(n=>{
+    const h=customers.find(x=>x.id===n.household);
+    return `<tr><td>${h?h.name:n.household}</td><td>${n.type}</td><td>${n.channel}</td><td class="mono">${n.sent}</td><td>${statusPill(n.status==='Delivered'?'active':'failed')}</td></tr>`;
+  }).join('')||'<tr><td colspan="5" class="empty">No notifications sent.</td></tr>';
+}
+document.getElementById('sendEmailBtn').addEventListener('click',()=>{
+  const id=document.getElementById('emailHouseholdSelect').value;
+  const h=customers.find(x=>x.id===id);
+  if(!h){toast('No eligible customer selected.');return;}
+  if(h.emailSent&&!confirm('Welcome email already sent. Resend?')) return;
+  h.emailSent=true;
+  const now=new Date().toISOString().replace('T',' ').slice(0,16);
+  h.notifs.unshift({type:'Welcome Email',channel:'Email',sent:now,status:'Delivered'});
+  notifications.unshift({household:id,type:'Welcome Email',channel:'Email',sent:now,status:'Delivered'});
+  h.auditLog.unshift({time:now,actor:'Admin',action:`Welcome email sent to ${h.email} — magic link expires 24h`});
+  toast(`✓ Welcome email sent to ${h.email} — magic link expires in 24h`);
+  refreshEmailHHSelects();renderNotifTable();
 });
 
-document.getElementById('sendEmailBtn').addEventListener('click', ()=>{
-  const id = document.getElementById('emailHouseholdSelect').value;
-  const h = households.find(x=>x.id===id);
-  if(!h){ toast('No eligible household selected'); return; }
-  h.emailSent = true;
-  toast(`Welcome email sent to ${h.email} — magic link expires in 24h`);
-  refreshHouseholdSelects();
-});
+/* ===========================
+   EMAIL LOG
+=========================== */
+function renderEmailLog(){
+  const f=document.getElementById('emailOutcomeFilter').value;
+  const list=emailLogs.filter(e=>!f||e.outcome===f);
+  document.getElementById('emailLogTable').innerHTML=list.map(e=>`
+    <tr>
+      <td class="mono">${e.received}</td><td>${e.subject}</td>
+      <td class="mono">${e.mprn}</td><td>${e.matched}</td>
+      <td>${statusPill(e.outcome==='Success'?'active':e.outcome==='Failed'?'failed':'pending')}</td>
+      <td>${e.statusApplied}</td>
+      <td>${e.outcome==='Manual Review Required'?`<button class="btn sm" onclick="resolveEmail(${emailLogs.indexOf(e)})">Resolve</button>`:''}</td>
+    </tr>`).join('')||'<tr><td colspan="7" class="empty">No emails to show.</td></tr>';
+}
+function resolveEmail(i){
+  const id=prompt('Enter matching Customer ID (e.g. HH-103):');
+  if(!id) return;
+  const h=customers.find(x=>x.id===id.trim());
+  if(!h){toast('⚠ Customer ID not found.');return;}
+  emailLogs[i].outcome='Success';emailLogs[i].matched=`${h.id} — ${h.name}`;emailLogs[i].statusApplied='Manually resolved';
+  h.auditLog.unshift({time:new Date().toISOString().replace('T',' ').slice(0,16),actor:'Admin',action:`Email manually resolved and applied to account`});
+  toast(`✓ Email resolved and linked to ${h.id}`);renderEmailLog();
+}
 
-/* ---------------- Init ---------------- */
-renderStats();
-renderRecent();
-renderHouseholdsTable();
-refreshHouseholdSelects();
-renderSiteLogTable();
+/* ===========================
+   EXPORT
+=========================== */
+function renderFleetHealth(){
+  const devs=allDevices();
+  const online=devs.filter(d=>d.conn==='Online').length;
+  const offline=devs.filter(d=>d.conn==='Offline').length;
+  document.getElementById('fleetHealth').innerHTML=`
+    <div class="stat-row" style="grid-template-columns:repeat(4,1fr);margin-bottom:0;">
+      <div class="stat-card"><div class="stat-num">${devs.length}</div><div class="stat-label">Registered devices</div></div>
+      <div class="stat-card"><div class="stat-num">${Math.round(online/devs.length*100)||0}%</div><div class="stat-label">Online</div></div>
+      <div class="stat-card ${offline?'warn':''}"><div class="stat-num">${offline}</div><div class="stat-label">Offline</div></div>
+      <div class="stat-card"><div class="stat-num">0</div><div class="stat-label">Never Connected</div></div>
+    </div>`;
+}
+function dlCSV(csv,name){
+  const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);a.download=name;a.click();
+}
+function exportCustomerCSV(){
+  const csv='Customer ID,RENEW ID,Name,Email,Phone,Address,Eircode,MPRN,Status,Supply Start,Billing Start,Created\n'+
+    customers.map(h=>`"${h.id}","${h.renewId}","${h.name}","${h.email}","${h.phone}","${h.address}","${h.eircode}","${h.mprn}","${h.status}","${h.supplyStart||''}","${h.billingStart||''}","${h.created}"`).join('\n');
+  dlCSV(csv,'renew_customers.csv');toast('✓ Customer CSV downloaded.');
+}
+function exportNotifCSV(){
+  const csv='Customer ID,MPRN,Type,Channel,Sent,Status\n'+
+    notifications.map(n=>{const h=customers.find(x=>x.id===n.household);return `"${n.household}","${h?h.mprn:''}","${n.type}","${n.channel}","${n.sent}","${n.status}"`;}).join('\n');
+  dlCSV(csv,'renew_notifications.csv');toast('✓ Notification log CSV downloaded.');
+}
+
+/* ===========================
+   TARIFF CONFIG
+=========================== */
+function renderTariffAccess(){
+  document.getElementById('tariffAccess').style.display=can('tariff')?'':'none';
+  document.getElementById('tariffDenied').style.display=can('tariff')?'none':'';
+  document.getElementById('tariffLogTable').innerHTML=tariffLog.map(l=>`<tr><td class="mono">${l.time}</td><td>${l.admin}</td><td>${l.field}</td><td class="mono">${l.prev}</td><td class="mono">${l.newVal}</td></tr>`).join('');
+}
+function logTariffChange(field,prev,newVal){
+  tariffLog.unshift({time:new Date().toISOString().replace('T',' ').slice(0,16),admin:'Swarit Gaur',field,prev,newVal});
+  document.getElementById('tariffLogTable').innerHTML=tariffLog.map(l=>`<tr><td class="mono">${l.time}</td><td>${l.admin}</td><td>${l.field}</td><td class="mono">${l.prev}</td><td class="mono">${l.newVal}</td></tr>`).join('');
+}
+function saveTariffThresholds(){
+  logTariffChange('Green Threshold','prev','<'+document.getElementById('threshGreen').value+'c/kWh');
+  toast('✓ Threshold bands saved and applied to all customers.');
+}
+function saveBaseRate(){
+  logTariffChange('Base Unit Rate','prev',document.getElementById('baseRate').value+'c/kWh');
+  toast('✓ Base rate saved. Customer app unit rates will recalculate from effective date.');
+}
+function saveNotifThresholds(){
+  logTariffChange('Notification Triggers','prev',`Cheap <${document.getElementById('cheapTrigger').value}c, Exp >${document.getElementById('expTrigger').value}c`);
+  toast('✓ Notification trigger thresholds saved.');
+}
+
+/* ===========================
+   ADMIN USERS
+=========================== */
+function renderAdminUsersAccess(){
+  document.getElementById('adminUsersAccess').style.display=can('adminusers')?'':'none';
+  document.getElementById('adminUsersDenied').style.display=can('adminusers')?'none':'';
+  document.getElementById('inviteBtn').style.display=can('adminusers')?'':'none';
+  if(can('adminusers')) renderAdminUsers();
+}
+function renderAdminUsers(){
+  const rf=document.getElementById('adminRoleFilter').value;
+  const sf=document.getElementById('adminStatusFilter').value;
+  const list=adminUsers.filter(u=>(!rf||u.role===rf)&&(!sf||u.status===sf));
+  document.getElementById('adminUsersTable').innerHTML=list.map(u=>`
+    <tr>
+      <td>${u.name}</td><td class="mono">${u.email}</td><td>${statusPill(u.role==='Super Admin'?'active':u.role==='Admin'?'invited':'pending')}</td>
+      <td>${statusPill(u.status==='Active'?'active':u.status==='Invited'?'invited':'suspended')}</td>
+      <td class="mono">${u.invited}</td><td class="mono">${u.lastLogin}</td>
+      <td>
+        <select class="btn sm secondary" onchange="changeUserRole('${u.email}',this.value);this.value=''">
+          <option value="">Change role…</option>
+          <option>Super Admin</option><option>Admin</option><option>Customer Care</option><option>Operations</option>
+        </select>
+        <button class="btn sm ${u.status==='Suspended'?'green-btn':'danger'}" onclick="toggleSuspend('${u.email}')" style="margin-left:6px;">${u.status==='Suspended'?'Reactivate':'Suspend'}</button>
+      </td>
+    </tr>`).join('')||'<tr><td colspan="7" class="empty">No admin users match filters.</td></tr>';
+}
+function showInviteForm(){ document.getElementById('inviteFormBlock').style.display=''; }
+function hideInviteForm(){ document.getElementById('inviteFormBlock').style.display='none'; }
+document.getElementById('inviteForm').addEventListener('submit',e=>{
+  e.preventDefault();
+  const f=new FormData(e.target);
+  if(adminUsers.find(u=>u.email===f.get('email'))){toast('⚠ This email already has an admin account.');return;}
+  adminUsers.push({name:f.get('email').split('@')[0],email:f.get('email'),role:f.get('role'),status:'Invited',invited:new Date().toISOString().slice(0,10),lastLogin:'Never'});
+  toast(`✓ Invitation sent to ${f.get('email')} as ${f.get('role')} (expires in 7 days)`);
+  e.target.reset();hideInviteForm();renderAdminUsers();
+});
+function changeUserRole(email,role){
+  if(!role) return;
+  const u=adminUsers.find(x=>x.email===email);
+  if(!u) return;
+  const old=u.role;u.role=role;
+  toast(`✓ ${u.name} role changed: ${old} → ${role}`);renderAdminUsers();
+}
+function toggleSuspend(email){
+  const u=adminUsers.find(x=>x.email===email);
+  if(!u) return;
+  if(u.email==='swarit@renew.ie'&&u.status!=='Suspended'){toast('⚠ Cannot suspend the only Super Admin.');return;}
+  u.status=u.status==='Suspended'?'Active':'Suspended';
+  toast(`✓ ${u.name} ${u.status==='Suspended'?'suspended':'reactivated'}`);renderAdminUsers();
+}
+
+/* ===========================
+   INIT
+=========================== */
+function renderAll(){
+  renderStats();renderSiteLog();renderNotifTable();renderDeviceStats();renderDevicesTable();refreshHHSelects();refreshEmailHHSelects();
+}
+renderAll();
+// Set today as default date on date fields
+document.querySelectorAll('input[type=date]').forEach(el=>{ if(!el.value) el.value=new Date().toISOString().slice(0,10); });
 </script>
 </body>
 </html>
