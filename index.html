@@ -4,30 +4,28 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>RENEW · Admin Console</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#0F1720;
-    --surface:#141D27;
-    --surface-2:#1B2530;
-    --border:#28333F;
-    --text:#E8ECF1;
-    --text-dim:#8B98A8;
-    --text-faint:#5C6776;
+    --bg:#ffffff;
+    --surface:#f5f7fa;
+    --surface-2:#eef1f5;
+    --border:#dde2e9;
+    --text:#0f1f2e;
+    --text-dim:#4a5a6a;
+    --text-faint:#8a97a6;
     --accent:#1a4b6e;
-    --accent-soft:rgba(26,75,110,0.14);
+    --accent-soft:rgba(26,75,110,0.10);
     --green:#00835d;
-    --green-soft:rgba(0,131,93,0.14);
-    --amber:#FFC857;
-    --amber-soft:rgba(255,200,87,0.14);
-    --red:#FF5C5C;
-    --red-soft:rgba(255,92,92,0.14);
-    --slate:#8B98A8;
-    --slate-soft:rgba(139,152,168,0.14);
-    --display:'Space Grotesk', sans-serif;
-    --body:'Inter', sans-serif;
-    --mono:'IBM Plex Mono', monospace;
+    --green-soft:rgba(0,131,93,0.10);
+    --amber:#b45309;
+    --amber-soft:rgba(180,83,9,0.10);
+    --red:#c0392b;
+    --red-soft:rgba(192,57,43,0.10);
+    --slate:#64748b;
+    --slate-soft:rgba(100,116,139,0.10);
+    --display:'Helvetica Neue', Helvetica, Arial, sans-serif;
+    --body:'Helvetica Neue', Helvetica, Arial, sans-serif;
+    --mono:'Helvetica Neue', Helvetica, Arial, sans-serif;
     --radius:6px;
   }
   *{box-sizing:border-box;}
@@ -146,7 +144,7 @@
     font-weight:600;
     margin-top:18px;
   }
-  .btn:hover{background:#FF9D5C;}
+  .btn:hover{background:#15395a;}
   .btn.secondary{background:transparent;border:1px solid var(--border);color:var(--text);font-weight:500;}
   .btn.secondary:hover{border-color:var(--accent);color:var(--accent);}
   .btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
@@ -175,7 +173,7 @@
 <div class="app">
   <aside class="sidebar">
     <div class="brand">
-      <div class="brand-mark">RENEW<span>·</span></div>
+      <div class="brand-mark"><span style="color:var(--accent)">RE</span><span style="color:var(--green)">NEW</span></div>
       <div class="brand-eyebrow">Admin Console</div>
     </div>
     <ul class="nav">
