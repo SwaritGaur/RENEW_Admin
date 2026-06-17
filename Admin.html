@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>RENEW · Admin Console</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0F1720;
+    --surface:#141D27;
+    --surface-2:#1B2530;
+    --border:#28333F;
+    --text:#E8ECF1;
+    --text-dim:#8B98A8;
+    --text-faint:#5C6776;
+    --accent:#FF8A3D;
+    --accent-soft:rgba(255,138,61,0.14);
+    --green:#3DDC8C;
+    --green-soft:rgba(61,220,140,0.14);
+    --amber:#FFC857;
+    --amber-soft:rgba(255,200,87,0.14);
+    --red:#FF5C5C;
+    --red-soft:rgba(255,92,92,0.14);
+    --slate:#8B98A8;
+    --slate-soft:rgba(139,152,168,0.14);
+    --display:'Space Grotesk', sans-serif;
+    --body:'Inter', sans-serif;
+    --mono:'IBM Plex Mono', monospace;
+    --radius:6px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:var(--body);
+    -webkit-font-smoothing:antialiased;
+  }
+  button{font-family:var(--body);cursor:pointer;}
+  input,select,textarea{font-family:var(--body);}
+
+  /* ---------- Layout ---------- */
+  .app{display:grid;grid-template-columns:240px 1fr;min-height:100vh;}
+  @media (max-width:780px){
+    .app{grid-template-columns:1fr;}
+    .sidebar{position:static;flex-direction:row;overflow-x:auto;border-right:none;border-bottom:1px solid var(--border);}
+    .sidebar .brand{display:none;}
+    .nav{flex-direction:row;}
+  }
+
+  .sidebar{
+    background:var(--surface);
+    border-right:1px solid var(--border);
+    display:flex;
+    flex-direction:column;
+    padding:22px 0;
+    position:sticky;
+    top:0;
+    height:100vh;
+  }
+  .brand{padding:0 22px 22px;border-bottom:1px solid var(--border);margin-bottom:14px;}
+  .brand-mark{font-family:var(--display);font-weight:700;font-size:20px;letter-spacing:0.5px;color:var(--text);}
+  .brand-mark span{color:var(--accent);}
+  .brand-eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:1.5px;color:var(--text-faint);text-transform:uppercase;margin-top:4px;}
+
+  .nav{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px;}
+  .nav-item{padding:11px 22px;font-size:13.5px;color:var(--text-dim);border-left:2px solid transparent;cursor:pointer;display:flex;align-items:center;gap:10px;white-space:nowrap;}
+  .nav-item:hover{color:var(--text);background:var(--surface-2);}
+  .nav-item.active{color:var(--text);border-left-color:var(--accent);background:var(--surface-2);font-weight:500;}
+  .nav-dot{width:5px;height:5px;border-radius:50%;background:var(--text-faint);flex-shrink:0;}
+  .nav-item.active .nav-dot{background:var(--accent);}
+
+  .sidebar-footer{margin-top:auto;padding:14px 22px 4px;font-family:var(--mono);font-size:10.5px;color:var(--text-faint);border-top:1px solid var(--border);padding-top:14px;}
+
+  /* ---------- Main ---------- */
+  .main{padding:28px 36px 60px;max-width:1080px;}
+  .topbar{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:4px;}
+  .topbar h1{font-family:var(--display);font-size:24px;font-weight:600;margin:0;}
+  .topbar .sub{font-size:12.5px;color:var(--text-faint);font-family:var(--mono);}
+  .pulse-rule{height:2px;background:linear-gradient(90deg,var(--accent) 0%, transparent 40%);background-size:200% 100%;margin:14px 0 28px;border-radius:2px;animation:pulse-move 3.5s linear infinite;opacity:0.7;}
+  @keyframes pulse-move{0%{background-position:0% 0;}100%{background-position:-200% 0;}}
+  @media (prefers-reduced-motion: reduce){.pulse-rule{animation:none;}}
+
+  .panel{display:none;}
+  .panel.active{display:block;animation:fadein 0.25s ease;}
+  @keyframes fadein{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:translateY(0);}}
+
+  /* ---------- Stat cards ---------- */
+  .stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:30px;}
+  @media (max-width:780px){.stat-row{grid-template-columns:repeat(2,1fr);}}
+  .stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;}
+  .stat-num{font-family:var(--mono);font-size:28px;font-weight:500;}
+  .stat-label{font-size:12px;color:var(--text-dim);margin-top:4px;}
+  .led{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:7px;position:relative;top:-1px;}
+  .led.green{background:var(--green);box-shadow:0 0 6px var(--green);animation:ledpulse 2s ease-in-out infinite;}
+  .led.amber{background:var(--amber);box-shadow:0 0 6px var(--amber);}
+  .led.red{background:var(--red);box-shadow:0 0 6px var(--red);}
+  .led.slate{background:var(--text-faint);}
+  @keyframes ledpulse{0%,100%{opacity:1;}50%{opacity:0.45;}}
+  @media (prefers-reduced-motion: reduce){.led{animation:none;}}
+
+  /* ---------- Section blocks ---------- */
+  .block{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:22px 24px;margin-bottom:20px;}
+  .block h2{font-family:var(--display);font-size:15px;font-weight:600;margin:0 0 4px;}
+  .block .desc{font-size:12.5px;color:var(--text-dim);margin:0 0 18px;line-height:1.5;}
+
+  table{width:100%;border-collapse:collapse;font-size:13px;}
+  thead th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:0.6px;color:var(--text-faint);font-weight:500;padding:0 10px 10px;border-bottom:1px solid var(--border);}
+  tbody td{padding:11px 10px;border-bottom:1px solid var(--border);color:var(--text);}
+  tbody tr:last-child td{border-bottom:none;}
+  tbody tr{cursor:pointer;}
+  tbody tr:hover{background:var(--surface-2);}
+  .mono{font-family:var(--mono);font-size:12.5px;color:var(--text-dim);}
+
+  .pill{display:inline-block;font-size:11px;font-family:var(--mono);padding:3px 8px;border-radius:3px;letter-spacing:0.3px;}
+  .pill.pending{background:var(--amber-soft);color:var(--amber);}
+  .pill.active{background:var(--green-soft);color:var(--green);}
+
+  /* ---------- Forms ---------- */
+  .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px 16px;}
+  @media (max-width:600px){.form-grid{grid-template-columns:1fr;}}
+  .field{display:flex;flex-direction:column;gap:6px;}
+  .field.full{grid-column:1/-1;}
+  .field label{font-size:12px;color:var(--text-dim);}
+  .field input,.field select,.field textarea{
+    background:var(--bg);
+    border:1px solid var(--border);
+    color:var(--text);
+    border-radius:4px;
+    padding:9px 11px;
+    font-size:13.5px;
+    outline:none;
+  }
+  .field input:focus,.field select:focus,.field textarea:focus{border-color:var(--accent);}
+  .hint{font-size:11.5px;color:var(--text-faint);margin-top:2px;}
+
+  .btn{
+    background:var(--accent);
+    color:#1A1006;
+    border:none;
+    padding:10px 18px;
+    border-radius:4px;
+    font-size:13.5px;
+    font-weight:600;
+    margin-top:18px;
+  }
+  .btn:hover{background:#FF9D5C;}
+  .btn.secondary{background:transparent;border:1px solid var(--border);color:var(--text);font-weight:500;}
+  .btn.secondary:hover{border-color:var(--accent);color:var(--accent);}
+  .btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
+
+  .empty{padding:30px 0;text-align:center;color:var(--text-faint);font-size:13px;}
+
+  /* ---------- Toast ---------- */
+  #toast{
+    position:fixed;bottom:24px;right:24px;
+    background:var(--surface-2);border:1px solid var(--accent);
+    color:var(--text);padding:13px 18px;border-radius:6px;
+    font-size:13px;display:none;max-width:320px;
+    box-shadow:0 8px 24px rgba(0,0,0,0.4);
+    font-family:var(--mono);
+  }
+
+  /* household detail drawer */
+  .detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px 24px;margin-bottom:16px;font-size:13px;}
+  .detail-grid div b{display:block;font-size:11px;color:var(--text-faint);font-weight:500;margin-bottom:2px;text-transform:uppercase;letter-spacing:0.4px;}
+  .device-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-top:1px solid var(--border);font-size:13px;}
+  .actions-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px;}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark">RENEW<span>·</span></div>
+      <div class="brand-eyebrow">Admin Console</div>
+    </div>
+    <ul class="nav">
+      <li class="nav-item active" data-panel="overview"><span class="nav-dot"></span>Overview</li>
+      <li class="nav-item" data-panel="households"><span class="nav-dot"></span>Households</li>
+      <li class="nav-item" data-panel="newaccount"><span class="nav-dot"></span>New Account</li>
+      <li class="nav-item" data-panel="devices"><span class="nav-dot"></span>Link Devices</li>
+      <li class="nav-item" data-panel="sitelog"><span class="nav-dot"></span>Site Log</li>
+      <li class="nav-item" data-panel="email"><span class="nav-dot"></span>Welcome Email</li>
+    </ul>
+    <div class="sidebar-footer">v0.1 PROTOTYPE<br>NOT CONNECTED TO LIVE DATA</div>
+  </aside>
+
+  <main class="main">
+
+    <!-- OVERVIEW -->
+    <section class="panel active" id="panel-overview">
+      <div class="topbar"><h1>Overview</h1><span class="sub">EPIC-T01 / EPIC-T02</span></div>
+      <div class="pulse-rule"></div>
+      <div class="stat-row" id="statRow"></div>
+      <div class="block">
+        <h2>Recently updated households</h2>
+        <p class="desc">The five most recently touched accounts across all stages.</p>
+        <table>
+          <thead><tr><th>Household</th><th>Status</th><th>Flux</th><th>Leaf</th><th>Updated</th></tr></thead>
+          <tbody id="recentTable"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- HOUSEHOLDS -->
+    <section class="panel" id="panel-households">
+      <div class="topbar"><h1>Households</h1><span class="sub">All accounts</span></div>
+      <div class="pulse-rule"></div>
+      <div class="block">
+        <h2>All households</h2>
+        <p class="desc">Click a row to view full installation and account detail.</p>
+        <table>
+          <thead><tr><th>ID</th><th>Name</th><th>Eircode</th><th>MPRN</th><th>Status</th><th>Devices</th></tr></thead>
+          <tbody id="householdsTable"></tbody>
+        </table>
+      </div>
+      <div class="block" id="detailBlock" style="display:none;"></div>
+    </section>
+
+    <!-- NEW ACCOUNT -->
+    <section class="panel" id="panel-newaccount">
+      <div class="topbar"><h1>New Account</h1><span class="sub">T02-S01</span></div>
+      <div class="pulse-rule"></div>
+      <div class="block">
+        <h2>Create user account</h2>
+        <p class="desc">Creates the account with status "pending activation" and generates a household ID. Mirrors T02-S01 AC01.</p>
+        <form id="newAccountForm">
+          <div class="form-grid">
+            <div class="field"><label>Full name</label><input required name="name" placeholder="e.g. Aoife Byrne"></div>
+            <div class="field"><label>Email address</label><input required type="email" name="email" placeholder="name@example.com"></div>
+            <div class="field"><label>Phone number</label><input required name="phone" placeholder="+353 ..."></div>
+            <div class="field"><label>MPRN</label><input required name="mprn" class="mono" placeholder="10-digit meter reference"></div>
+            <div class="field full"><label>Home address</label><input required name="address" placeholder="Street, Town, County"></div>
+            <div class="field"><label>Eircode</label><input required name="eircode" class="mono" placeholder="A65 F4E2"></div>
+          </div>
+          <button type="submit" class="btn">Create account</button>
+        </form>
+      </div>
+    </section>
+
+    <!-- LINK DEVICES -->
+    <section class="panel" id="panel-devices">
+      <div class="topbar"><h1>Link Devices</h1><span class="sub">T01-S02 · T01-S03 · T02-S01</span></div>
+      <div class="pulse-rule"></div>
+      <div class="block">
+        <h2>Link Flux &amp; Leaf to a household</h2>
+        <p class="desc">Wi-Fi password is never entered or stored here — only the network name, for reference. Matches the install note in T01-S03.</p>
+        <form id="devicesForm">
+          <div class="form-grid">
+            <div class="field full"><label>Household</label><select required name="household" id="householdSelect"></select></div>
+            <div class="field"><label>Flux device ID</label><input required name="fluxId" class="mono" placeholder="FLX-XXXXX"></div>
+            <div class="field"><label>Flux install date</label><input required type="date" name="fluxDate"></div>
+            <div class="field"><label>Leaf device ID</label><input required name="leafId" class="mono" placeholder="LEAF-XXXXX"></div>
+            <div class="field"><label>Leaf install date</label><input required type="date" name="leafDate"></div>
+            <div class="field full"><label>Wi-Fi network name (SSID only)</label><input required name="ssid" placeholder="e.g. Byrne_Home_5G"></div>
+          </div>
+          <button type="submit" class="btn">Link devices &amp; mark online</button>
+        </form>
+      </div>
+    </section>
+
+    <!-- SITE LOG -->
+    <section class="panel" id="panel-sitelog">
+      <div class="topbar"><h1>Site Log</h1><span class="sub">T01-S01</span></div>
+      <div class="pulse-rule"></div>
+      <div class="block">
+        <h2>Record a pre-installation site check</h2>
+        <p class="desc">One entry per visit. A failed check should trigger a reschedule with the end user.</p>
+        <form id="siteLogForm">
+          <div class="form-grid">
+            <div class="field full"><label>Household</label><select required name="household" id="householdSelectLog"></select></div>
+            <div class="field"><label>Consumer unit access</label>
+              <select required name="result"><option value="PASS">PASS — ready for Flux</option><option value="FAIL">FAIL</option></select>
+            </div>
+            <div class="field"><label>Leaf socket location</label><input name="socket" placeholder="e.g. Hallway socket, 2m from fuse board"></div>
+            <div class="field full"><label>Notes (reason if failed)</label><input name="notes" placeholder="Optional"></div>
+          </div>
+          <button type="submit" class="btn">Save site log entry</button>
+        </form>
+      </div>
+      <div class="block">
+        <h2>Recent entries</h2>
+        <table>
+          <thead><tr><th>Household</th><th>Result</th><th>Socket location</th><th>Notes</th></tr></thead>
+          <tbody id="siteLogTable"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- WELCOME EMAIL -->
+    <section class="panel" id="panel-email">
+      <div class="topbar"><h1>Welcome Email</h1><span class="sub">T02-S02</span></div>
+      <div class="pulse-rule"></div>
+      <div class="block">
+        <h2>Send login instructions</h2>
+        <p class="desc">Only available once both devices are linked. Sends a magic link valid for 24 hours, per the spec recommendation.</p>
+        <div class="form-grid">
+          <div class="field full"><label>Household</label><select id="emailHouseholdSelect"></select></div>
+        </div>
+        <button class="btn" id="sendEmailBtn">Send welcome email</button>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<div id="toast"></div>
+
+<script>
+/* ---------------- Mock data ---------------- */
+let households = [
+  {id:"HH-101", name:"Aoife Byrne", email:"aoife.byrne@example.com", phone:"+353 87 100 1101", address:"14 Elm Grove, Maynooth, Co. Kildare", eircode:"W23 X1A2", mprn:"10012345678", status:"active", flux:{id:"FLX-00451", date:"2026-04-02"}, leaf:{id:"LEAF-00451", date:"2026-04-02", ssid:"Byrne_Home_5G"}, emailSent:true, updated:"2 days ago"},
+  {id:"HH-102", name:"Padraig Walsh", email:"p.walsh@example.com", phone:"+353 86 200 2202", address:"7 Riverside Court, Lucan, Co. Dublin", eircode:"K78 P9N1", mprn:"10022345671", status:"pending activation", flux:{id:"FLX-00452", date:"2026-04-05"}, leaf:null, emailSent:false, updated:"1 day ago"},
+  {id:"HH-103", name:"Niamh O'Connor", email:"niamh.oconnor@example.com", phone:"+353 85 300 3303", address:"22 The Paddocks, Naas, Co. Kildare", eircode:"W91 D2E3", mprn:"10032345672", status:"pending activation", flux:null, leaf:null, emailSent:false, updated:"5 hours ago"},
+];
+let siteLogs = [
+  {household:"HH-101", result:"PASS", socket:"Hallway socket, 2m from fuse board", notes:""},
+  {household:"HH-102", result:"PASS", socket:"Utility room socket", notes:"Tight access to consumer unit, used right-angle clip"},
+];
+let nextHHNumber = 104;
+
+/* ---------------- Helpers ---------------- */
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.display = 'block';
+  clearTimeout(window._toastTimer);
+  window._toastTimer = setTimeout(()=>{ t.style.display='none'; }, 3200);
+}
+function ledFor(h){
+  if(h.status === 'active') return 'green';
+  if(h.flux || h.leaf) return 'amber';
+  return 'slate';
+}
+function deviceSummary(h){
+  const f = h.flux ? '<span class="led green"></span>Flux' : '<span class="led slate"></span>Flux';
+  const l = h.leaf ? '<span class="led green"></span>Leaf' : '<span class="led slate"></span>Leaf';
+  return f + '&nbsp;&nbsp;' + l;
+}
+
+/* ---------------- Navigation ---------------- */
+document.querySelectorAll('.nav-item').forEach(item=>{
+  item.addEventListener('click', ()=>{
+    document.querySelectorAll('.nav-item').forEach(i=>i.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+    item.classList.add('active');
+    document.getElementById('panel-'+item.dataset.panel).classList.add('active');
+    if(item.dataset.panel === 'households') renderHouseholdsTable();
+  });
+});
+
+/* ---------------- Renderers ---------------- */
+function renderStats(){
+  const total = households.length;
+  const pending = households.filter(h=>h.status==='pending activation').length;
+  const active = households.filter(h=>h.status==='active').length;
+  const onlineDevices = households.reduce((n,h)=> n + (h.flux?1:0) + (h.leaf?1:0), 0);
+  const row = document.getElementById('statRow');
+  row.innerHTML = `
+    <div class="stat-card"><div class="stat-num">${total}</div><div class="stat-label"><span class="led slate"></span>Total households</div></div>
+    <div class="stat-card"><div class="stat-num">${pending}</div><div class="stat-label"><span class="led amber"></span>Pending activation</div></div>
+    <div class="stat-card"><div class="stat-num">${active}</div><div class="stat-label"><span class="led green"></span>Active</div></div>
+    <div class="stat-card"><div class="stat-num">${onlineDevices}</div><div class="stat-label"><span class="led green"></span>Devices linked</div></div>
+  `;
+}
+
+function renderRecent(){
+  const body = document.getElementById('recentTable');
+  body.innerHTML = households.slice(0,5).map(h=>`
+    <tr onclick="goToHousehold('${h.id}')">
+      <td>${h.name} <span class="mono">${h.id}</span></td>
+      <td><span class="pill ${h.status==='active'?'active':'pending'}">${h.status}</span></td>
+      <td>${h.flux ? '<span class="led green"></span>'+h.flux.id : '<span class="led slate"></span>—'}</td>
+      <td>${h.leaf ? '<span class="led green"></span>'+h.leaf.id : '<span class="led slate"></span>—'}</td>
+      <td class="mono">${h.updated}</td>
+    </tr>`).join('');
+}
+
+function renderHouseholdsTable(){
+  const body = document.getElementById('householdsTable');
+  body.innerHTML = households.map(h=>`
+    <tr onclick="showDetail('${h.id}')">
+      <td class="mono">${h.id}</td>
+      <td>${h.name}</td>
+      <td class="mono">${h.eircode}</td>
+      <td class="mono">${h.mprn}</td>
+      <td><span class="pill ${h.status==='active'?'active':'pending'}">${h.status}</span></td>
+      <td>${deviceSummary(h)}</td>
+    </tr>`).join('');
+}
+
+function goToHousehold(id){
+  document.querySelector('.nav-item[data-panel="households"]').click();
+  showDetail(id);
+}
+
+function showDetail(id){
+  const h = households.find(x=>x.id===id);
+  const block = document.getElementById('detailBlock');
+  block.style.display = 'block';
+  block.innerHTML = `
+    <h2>${h.name} <span class="mono" style="color:var(--text-faint);font-size:12px;">${h.id}</span></h2>
+    <p class="desc">Full account and installation detail.</p>
+    <div class="detail-grid">
+      <div><b>Email</b>${h.email}</div>
+      <div><b>Phone</b>${h.phone}</div>
+      <div><b>Address</b>${h.address}</div>
+      <div><b>Eircode</b><span class="mono">${h.eircode}</span></div>
+      <div><b>MPRN</b><span class="mono">${h.mprn}</span></div>
+      <div><b>Status</b><span class="pill ${h.status==='active'?'active':'pending'}">${h.status}</span></div>
+    </div>
+    <div class="device-row"><span><span class="led ${h.flux?'green':'slate'}"></span>Flux</span><span class="mono">${h.flux ? h.flux.id+' · installed '+h.flux.date : 'not linked'}</span></div>
+    <div class="device-row"><span><span class="led ${h.leaf?'green':'slate'}"></span>Leaf</span><span class="mono">${h.leaf ? h.leaf.id+' · '+h.leaf.ssid : 'not linked'}</span></div>
+    <div class="device-row"><span>Welcome email</span><span class="mono">${h.emailSent ? 'sent' : 'not sent'}</span></div>
+    <div class="actions-row">
+      <button class="btn secondary" onclick="closeDetail()">Close</button>
+    </div>
+  `;
+}
+function closeDetail(){ document.getElementById('detailBlock').style.display='none'; }
+
+function refreshHouseholdSelects(){
+  const pendingOnly = households.filter(h=>h.status!=='active' || true); // all households selectable for linking edits
+  const opts = households.map(h=>`<option value="${h.id}">${h.id} — ${h.name}</option>`).join('');
+  document.getElementById('householdSelect').innerHTML = opts;
+  document.getElementById('householdSelectLog').innerHTML = opts;
+
+  const readyForEmail = households.filter(h=>h.flux && h.leaf);
+  document.getElementById('emailHouseholdSelect').innerHTML = readyForEmail.length
+    ? readyForEmail.map(h=>`<option value="${h.id}">${h.id} — ${h.name} ${h.emailSent ? '(already sent)' : ''}</option>`).join('')
+    : `<option value="">No households ready — link both devices first</option>`;
+}
+
+function renderSiteLogTable(){
+  const body = document.getElementById('siteLogTable');
+  if(siteLogs.length === 0){ body.innerHTML = `<tr><td colspan="4" class="empty">No site log entries yet.</td></tr>`; return; }
+  body.innerHTML = siteLogs.slice().reverse().map(l=>{
+    const h = households.find(x=>x.id===l.household);
+    return `<tr>
+      <td>${h ? h.name : l.household} <span class="mono">${l.household}</span></td>
+      <td><span class="pill ${l.result==='PASS'?'active':'pending'}">${l.result}</span></td>
+      <td>${l.socket || '—'}</td>
+      <td>${l.notes || '—'}</td>
+    </tr>`;
+  }).join('');
+}
+
+/* ---------------- Form handlers ---------------- */
+document.getElementById('newAccountForm').addEventListener('submit', e=>{
+  e.preventDefault();
+  const f = new FormData(e.target);
+  const id = 'HH-' + (nextHHNumber++);
+  households.unshift({
+    id, name:f.get('name'), email:f.get('email'), phone:f.get('phone'),
+    address:f.get('address'), eircode:f.get('eircode'), mprn:f.get('mprn'),
+    status:'pending activation', flux:null, leaf:null, emailSent:false, updated:'just now'
+  });
+  toast(`Account created — ${id} (pending activation)`);
+  e.target.reset();
+  renderStats(); renderRecent(); refreshHouseholdSelects();
+});
+
+document.getElementById('devicesForm').addEventListener('submit', e=>{
+  e.preventDefault();
+  const f = new FormData(e.target);
+  const h = households.find(x=>x.id===f.get('household'));
+  if(!h) return;
+  h.flux = {id:f.get('fluxId'), date:f.get('fluxDate')};
+  h.leaf = {id:f.get('leafId'), date:f.get('leafDate'), ssid:f.get('ssid')};
+  h.status = 'active';
+  h.updated = 'just now';
+  toast(`${h.id} — Flux and Leaf linked, status set to active`);
+  e.target.reset();
+  renderStats(); renderRecent(); refreshHouseholdSelects();
+});
+
+document.getElementById('siteLogForm').addEventListener('submit', e=>{
+  e.preventDefault();
+  const f = new FormData(e.target);
+  siteLogs.push({household:f.get('household'), result:f.get('result'), socket:f.get('socket'), notes:f.get('notes')});
+  toast(`Site log saved for ${f.get('household')}`);
+  e.target.reset();
+  renderSiteLogTable();
+});
+
+document.getElementById('sendEmailBtn').addEventListener('click', ()=>{
+  const id = document.getElementById('emailHouseholdSelect').value;
+  const h = households.find(x=>x.id===id);
+  if(!h){ toast('No eligible household selected'); return; }
+  h.emailSent = true;
+  toast(`Welcome email sent to ${h.email} — magic link expires in 24h`);
+  refreshHouseholdSelects();
+});
+
+/* ---------------- Init ---------------- */
+renderStats();
+renderRecent();
+renderHouseholdsTable();
+refreshHouseholdSelects();
+renderSiteLogTable();
+</script>
+</body>
+</html>
